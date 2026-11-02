@@ -1,0 +1,5 @@
+# Same line endings on Windows, macOS, Linux and Colab
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.jpg binary

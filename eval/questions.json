@@ -1,0 +1,72 @@
+[
+  {
+    "id": "q1",
+    "question": "Who developed the Pomodoro Technique?",
+    "expected_answer": "Francesco Cirillo, in the late 1980s.",
+    "source": "pomodoro_technique.txt",
+    "keywords": ["Cirillo"]
+  },
+  {
+    "id": "q2",
+    "question": "How many credit hours per semester is normal full-time study in the United States?",
+    "expected_answer": "Usually 15 credit hours per semester (30 per academic year).",
+    "source": "course_credit.txt",
+    "keywords": ["15"]
+  },
+  {
+    "id": "q3",
+    "question": "Which college first adopted the A-D/F grading system, and in which year?",
+    "expected_answer": "Mount Holyoke College, in 1897.",
+    "source": "grading_in_education.txt",
+    "keywords": ["Mount Holyoke", "1897"]
+  },
+  {
+    "id": "q4",
+    "question": "Who first introduced developmental advising?",
+    "expected_answer": "Crookson, in 1972.",
+    "source": "academic_advising.txt",
+    "keywords": ["Crookson"]
+  },
+  {
+    "id": "q5",
+    "question": "When is the club fair?",
+    "expected_answer": "Thursday 19 November 2026.",
+    "source": "tool:get_deadline",
+    "keywords": ["19", "November|Nov"]
+  },
+  {
+    "id": "q6",
+    "question": "A course costs 1275 SAR per credit hour. How much do 17 credit hours cost?",
+    "expected_answer": "21,675 SAR (1275 x 17).",
+    "source": "tool:calculator",
+    "keywords": ["21675|21,675|21 675"]
+  },
+  {
+    "id": "q7",
+    "question": "How much is the parking fee for students at this university?",
+    "expected_answer": "I don't know (the documents do not say).",
+    "source": null,
+    "keywords": []
+  },
+  {
+    "id": "q8",
+    "question": "How many books can an undergraduate student borrow from the library at the same time?",
+    "expected_answer": "8 books, for 21 days.",
+    "source": "library_rules.html",
+    "keywords": ["8"]
+  },
+  {
+    "id": "q9",
+    "question": "What is the last day to add or drop a course?",
+    "expected_answer": "Thursday 26 November 2026 (end of the add/drop period).",
+    "source": "tool:get_deadline",
+    "keywords": ["26", "November|Nov"]
+  },
+  {
+    "id": "q10",
+    "question": "When is the course withdrawal deadline?",
+    "expected_answer": "Thursday 17 December 2026.",
+    "source": "tool:get_deadline",
+    "keywords": ["17", "December|Dec"]
+  }
+]

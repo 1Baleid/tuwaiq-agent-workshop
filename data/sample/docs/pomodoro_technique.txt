@@ -1,0 +1,16 @@
+The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. It uses a kitchen timer to break work into intervals, typically 25 minutes in length, separated by short breaks. Each interval is known as a pomodoro, from the Italian word for tomato, after the tomato-shaped kitchen timer that Cirillo used while he was a university student.
+Apps and websites providing timers and instructions have popularized the technique. Closely related to concepts such as timeboxing and iterative and incremental development used in software design, the method has been adopted in pair programming contexts.
+
+== Description ==
+The original technique consists of deciding on the task, setting the timer (typically for 25 minutes), working on the task, taking a short break (typically 5–10 minutes) when the timer rings. This repeats until four pomodori are completed, after which a long break (typically 20 to 30 minutes) is taken before starting the cycle again.
+For the purposes of the technique, a pomodoro (pl. pomodori) is an interval of work time.
+A goal of the technique is to reduce the effect of internal and external interruptions of attention and flow. A pomodoro is indivisible; when interrupted during a pomodoro, either the other activity must be recorded and postponed (using the inform — negotiate — schedule — call back strategy) or the pomodoro must be abandoned.
+The stages of planning, tracking, recording, processing and visualizing are fundamental to the technique. In the planning phase, tasks are prioritized by recording them in a "To Do Today" list. As Pomodori are completed, they are recorded.
+
+== Tools ==
+The creator and his proponents encourage a low-tech approach, using a mechanical timer, paper, and pencil. The physical act of winding the timer confirms the user's determination to start the task; ticking externalizes the desire to complete the task; ringing announces a break. Flow and focus become associated with these physical stimuli.
+The technique has inspired application software for several platforms, with various programs available.
+
+== Research ==
+A study compared 25 students using the Pomodoro technique against 35 students taking self-regulated breaks. Students taking self-regulated breaks chose longer study sessions, which was associated with higher fatigue and lower concentration and motivation. The study found no difference between groups in mental effort or task completion.
+In 2025, a scoping review found: "Time-structured Pomodoro interventions consistently improved focus, reduced mental fatigue, and enhanced sustained task performance, outperforming self‑paced breaks."

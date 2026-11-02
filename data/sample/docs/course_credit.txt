@@ -1,0 +1,68 @@
+A course credit is a measure of the size of an educational course, often used to determine whether the requirements for an award have been met, to facilitate transfer between institutions, or to enhance intercomparability of qualifications. Credit may be input-based, defined by the quantity and notional time of instruction given – or outcome-based, such as learning outcomes or summative assessments.
+
+== In tertiary education ==
+
+=== Australia ===
+In Australian universities, no common credit point system exists, although 48 credit points per full-time year, or 24 per semester, or some multiple thereof, is not uncommon. This permits a semester of study to be broken into more flexible combinations of units than the typical four, due in part to 24 being a highly composite number. Credit points tend to reflect all forms of study and assessment by a student in a unit, not just contact time.
+The Australian Government's common measure of university course credits is known as Equivalent Full-Time Student Load (EFTSL). Under this system, a normal full-time load of study is 1.000 EFTSL per year or 0.500 EFTSL per semester, regardless of the credit point structure at each university. This is used as a common measure primarily for calculation of tuition fees and subsidies for government-supported places, including loans under the Higher Education Loan Program (see Tertiary education fees in Australia), but also for the determination of "full-time" status for the purposes of government assistance and requirements of student visas; a minimum of 75% of a standard load (i.e. 0.750 EFTSL per year) is typically required to achieve and retain full-time status.
+
+=== Brazil ===
+There is no unified academic credit system in Brazil. The regulating bodies of the Ministry of Education and the legislation count the hours of instruction. A full-time year of higher education takes between 800 and 1200 instruction-hours in Brazil, which would be equivalent to 50-80 US credits and 60 European ECTS.
+
+=== Canada ===
+In Canada, the term college often refers to a community college or trade school, whilst the more formal and inclusive term for post-high school education is post-secondary education. Most university courses run from September to April with 13 weeks before Christmas and 13 weeks after. Classes that meet three hours a week are generally awarded six credit hours. Third and fifth-year classes are more specialized so some facilities may offer half-courses that run from September to December or January to April. These courses are awarded three credit hours.
+In some provinces, such as Ontario, a different system is used.  The school year is often broken into two semesters.  A single semester class is worth half a credit, and a full year course is worth a full credit. A normal class load consists of five to six classes a semester, which leads to five-six credits being accumulated each school year.
+
+=== Europe ===
+
+In Europe, a common credit system has been introduced. The European Credit Transfer and Accumulation System (ECTS) is in some European countries used as the principal credit and grading system in universities, while other countries use the ECTS as a secondary credit system for exchange students. In ECTS, a full study year normally consists of 60 credits. ECTS grades are given in the A-E range, where F is failing. Schools are also allowed to use a pass/fail evaluation in the ECTS system.
+
+=== India ===
+In India, in engineering colleges which follow the course credit system, the number of 'contact hours' in a week of a particular course determines its credit value. Typically, courses vary from two to five credits. According to the National Institute of Technology, Tiruchirappalli, one of the top technical universities in India, the GPA is calculated on a ten-point scale, with weighted average of the grades received in the respective course. The grades awarded are; S, A, B, C, D, E and F (fail). This GPA is also known as CGPA (Cumulative Grade Point Average). On an average, students in India need to complete 180-185 credits after their four-year engineering course to be awarded the degree B.Tech/B.E. and a one-semester-long thesis project.
+A new CBCS (Choice Based Credit System) scoring system was devised by UGC for undergraduate students from the academic year 2016–17. The system provides an opportunity for students to pick courses from core, elective or skill-based courses.
+
+=== United Kingdom ===
+
+In the United Kingdom, the standard credit system in higher education is the Credit Accumulation and Transfer Scheme (CATS). This is a learning outcomes-based credit system, with one credit representing ten hours of notional learning. Credits are embedded in the qualifications frameworks for Wales and Scotland, while their use in England is voluntary but covered by a national agreement that is consistent with use in Wales and Scotland. Credits are associated with a level on the relevant qualifications framework, representing the depth and complexity of the learning. A full academic year normally consists of 120 credits. Two UK credits are equivalent to one ECTS credit.
+
+=== United States ===
+
+==== Credit hours ====
+In a college or university in the United States, students generally receive credit hours based on the number of "contact hours" per week in class, for one term, better known as semester credit hours (SCH). A contact hour includes any lecture or lab time when the professor is teaching the student or coaching the student while they apply the course information to an activity. Regardless of the duration of the course (i.e. a short semester like summer or intersession) and depending on the state or jurisdiction, a semester credit hour is 15-16 contact hours per semester.  Most college and university courses are three semester credit hours (SCH) or 45-48 contact hours, so they usually meet for three hours per week over a 15-week semester.
+Homework is time the student spends applying the class material without supervision of the professor: this includes studying notes, supplementary reading, writing papers, or other unsupervised activities such as labwork or fieldwork. Students are generally expected to spend two hours outside class studying and doing homework for every hour spent in class.
+The Code of Federal Regulations defines the conversion of credit hours to clock hours as:
+
+A semester or trimester hour must include at least 30 clock hours of instruction; and
+A quarter hour must include at least 20 clock hours of instruction.
+For courses that are not required to use the conversion between credit hours and clock hours, a further definition is given in the Federal Student Aid Handbook of:
+
+A credit hour is an amount of work that reasonably approximates not less than
+
+one hour of classroom or direct faculty instruction and a minimum of two hours of out-of-class work each week for approximately 15 weeks for one semester or trimester hour of credit, or 10 to 12 weeks for one quarter hour of credit, or at least the equivalent amount of work over a different amount of time; or
+at least an equivalent amount of work as required in paragraph (1) of this definition for other academic activities as established by the institution including laboratory work, internships, practicals, studio work, and other academic work leading to the award of credit hours.
+Normal full-time studying is usually 15 credit hours per semester or 30 credit hours per academic year. Some schools set a flat rate for full-time students, such that a student taking over 12 or 15 credit hours will pay the same amount as a student taking exactly 12 (or 15). A part-time student taking less than 12 hours pays per credit hour, on top of matriculation and student fees.
+Credit for laboratory and studio courses as well as physical education courses, internships and practica is usually less than for lectures – typically one credit for every two to three hours spent in lab or studio, depending on the amount of actual instruction necessary prior to lab. However, for some field experiences such as student teaching as a requirement for earning one's teaching license, a student may only earn 8-10 credits for the semester for doing 40 hours a week of work.
+To figure a grade-point average (GPA), the grade received in each course is subject to weighting, by multiplying it by the number of credit hours. Thus, a "B" (three grade points) in a four-credit class yields 12 "quality points". It is these which are added together, then divided by the total number of credits a student has taken, to get the GPA. Transfer credits are not necessarily counted in the GPA.
+Some courses may require a grade higher than that which is considered passing. In this case, a grade of "D" will still add to the total number of credits earned (unlike an "F").
+Various types of student aid  and certain student visas require students to take and complete a minimum number of course credits each term. Schools often require a minimum number or percentage of credits be taken at the school to qualify for a diploma from that school—this is known as a residency requirement.
+
+==== Credit by examination ====
+Credit by examination, also known as credit by exam, is a way of receiving course credit without taking the course. This grade often shows as a "K" on a transcript, however it carries no credit hours, and therefore has no effect on the GPA. This also means that a student often must take other classes instead, to meet minimum hour requirements. This still benefits the student, because he or she can learn something new and useful, instead of repeating what is already known. Defense Activity for Non-Traditional Education Support (DANTES) and College Level Examination Program (CLEP) are two programs that offer college bound students credit by examination.
+
+==== Faculty hours ====
+Faculty in comprehensive or baccalaureate colleges and universities typically have 12 SCH per semester.  Faculty teaching significant graduate work or large classes (100 or more students in a section) may have "load lifts" or "course reductions."   Faculty at research universities typically have an official teaching load of 12 SCH per semester, but their actual load is reduced because of the requirement for significant peer-reviewed published research.   While faculty workloads are almost universally based on the number of SCH taught, faculty teaching in technical "clock hour" programs in technical and community colleges have workloads that more closely resemble high school teaching, so that Faculty in community colleges typically teach 15 SCH or more per semester (5 days per week at 3 hours per day).
+
+=== Uruguay ===
+In Uruguay's University of the Republic, a credit stands for 15 hours of work, including classes, personally studying and task activities. Since semesters last 15 weeks, a credit directly corresponds to one hour of work a week.
+
+== In secondary education ==
+
+=== Canada ===
+In Canada, credits can be earned at the end of a course in high school. Earning a credit depends whether a person passes the course or not. A certain number of credits are required to graduate high school. A minimum of 30 credits are needed in order to graduate in specifically Ontario, those being 18 compulsory credits and 12 elective credits. One credit is equal to one completed course per semester, with the maximum credits earned per semester being four-to-five. Each school year is separated into two semesters, or four terms; while it takes one semester for one credit, there are two compulsory courses taken in Grade 10 that each take up one term, earning half a credit upon completion, adding up to one credit, and being considered as one course that has merely been separated. In Alberta, Nunavut, and Northwest Territories, 100 credits are required to graduate high school. The course credit system in Ontario is similar to the one used in the United States.
+
+=== United Kingdom ===
+
+The credit and qualifications frameworks for Scotland and Wales use the same UK credit, equivalent to ten hours of notional learning, as the higher education sector. All qualifications tied to the Welsh and Scottish frameworks have a credit value, covering schools, further education, higher education and vocational education. The Regulated Qualifications Framework (RQF) for non-higher education qualifications in England and Northern Ireland uses 'Total Qualification Time' (TQT), which is a direct measure of the notional learning time in hours. If credit is assigned for a qualification or a components of a qualification on the RQF, this is a tenth of the TQT rounded to the nearest whole number.
+
+=== United States ===
+In high schools in the United States, where all courses are usually the same number of hours, often meeting every day, students earn one credit for a course that lasts all year, or a half credit per course per semester. This credit is formally known as a Carnegie Unit. After a typical four-year run, the student needs  26 credits to graduate (an average of 6 to 7 at any time). Some high schools have only three years of school because 9th grade is part of their middle schools, with 18 to 21 credits required.
