@@ -83,6 +83,7 @@ def run_agent(question, history=None):
     Returns a dict: answer, sources, steps, tools_used, stopped (why the loop ended), seconds, history."""
     started = time.monotonic()
     messages = [{"role": "system", "content": system_prompt()}]
+    # TODO (Session 4): change MAX_HISTORY_TURNS and compare how much context follow-up questions retain.
     messages += (history or [])[-2 * config.MAX_HISTORY_TURNS:]  # keep only the last few turns (context size)
     messages.append({"role": "user", "content": question})
     log_event("question", question=question, provider=config.LLM_PROVIDER)

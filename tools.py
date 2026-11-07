@@ -17,13 +17,47 @@ import ast
 import csv
 import operator
 from datetime import date, datetime
-
+from pathlib import Path
+from typing import Any, Dict
 import answer
 import config
 import rag
-
-
 # ---------------------------------------------------------------- tool 1: document search
+def resolve_abs_path(path_str: str) -> Path:
+    """
+    Resolve a relative or absolute path, allowing access only inside the project.
+    """
+    root = config.ROOT.resolve()
+    path = Path(path_str)
+    full_path = (path if path.is_absolute() else root / path).resolve()
+    try:
+        full_path.relative_to(root)
+    except ValueError:
+        raise ValueError(f"path must stay inside the project directory: {root}") from None
+    return full_path
+
+def read_file_tool(filename: str) -> Dict[str, Any]:
+    """
+    Read a UTF-8 file inside the project.
+    :param filename: The name of the file to read.
+    :return: Its absolute path and full text content.
+    """
+    # TODO (Session 3): read a UTF-8 project file and return its absolute path and content
+# ---------------------------------------------------------------- tool 2: calculator
+
+def list_files_tool(path: str) -> Dict[str, Any]:
+    """
+    List the entries in a project directory.
+    :param path: The path to a directory to list files from.
+    :return: The absolute directory path and its entries.
+    """
+ #TODO (Session 3): list directory entries with their names and file/directory types
+
+def edit_file_tool(filename: str, content: str) -> Dict[str, Any]:
+    """Replace the contents of an existing UTF-8 file inside the project."""
+    #TODO (Session 3): replace the contents of an existing UTF-8 project file
+# SOLUTION END
+# ---------------------------------------------------------------- tool 2: document search
 def search_docs(query):
     """Search the documents (the index from Session 1) and return the best chunks, labelled."""
     hits = [hit for hit in rag.search(rag.get_store(), query) if hit["score"] >= config.MIN_SCORE]
@@ -99,21 +133,7 @@ def get_deadline(name):
 
 # ---------------------------------------------------------------- the registry
 TOOLS = {
-    "search_docs": {
-        "function": search_docs,
-        "description": "Search the documents. Returns the most relevant passages, each labelled with its source.",
-        "args": {"query": str},
-    },
-    "calculator": {
-        "function": calculator,
-        "description": "Work out an arithmetic expression, e.g. '12 * (3 + 4)'.",
-        "args": {"expression": str},
-    },
-    "get_deadline": {
-        "function": get_deadline,
-        "description": "Look up the date of a named deadline or event, and how many days are left.",
-        "args": {"name": str},
-    },
+  #TODO (Session 3): register every tool with its function, description, and argument types
 }
 
 
