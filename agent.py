@@ -21,7 +21,7 @@ import llm
 import rag
 import tools
 
-SYSTEM_PROMPT = """You are a helpful assistant for students. You answer questions with these tools:
+SYSTEM_PROMPT = """You are a helpful assistant for KFUPM (King Fahd University of Petroleum & Minerals) students. You answer questions with these tools:
 {tools}
 
 Rules:
