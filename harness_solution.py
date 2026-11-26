@@ -45,12 +45,29 @@ MAX_CONTEXT_CHARS = 60_000         # hard cap on the conversation sent to the mo
 MAX_FILE_CHARS = 20_000            # cap on one read_file result
 MAX_OUTPUT_CHARS = 4_000           # cap on one run_command result
 COMMAND_TIMEOUT_SECONDS = 120      # cap on one command
+# Longest reply the model may write in one step. A coding agent puts whole functions (or
+# whole files) inside one JSON reply, so it needs far more room than a Q&A agent.
+# Note for students: config.MAX_OUTPUT_TOKENS = 800 is enough when the agent is a Q&A
+# agent (agent.py), whose replies are short tool calls and short answers. Here, 800 cuts
+# a write_file/edit_file reply in half: the JSON breaks and the loop fills with bad_json
+# errors. run_agent() raises the limit to this value while it runs, then puts it back.
+MAX_REPLY_TOKENS = 8_000
 VERBOSE = True
 LOG_FILE = config.ROOT / "logs" / "harness.jsonl"
 
 # No shell: the model passes argv as a list, and only these programs are allowed.
 ALLOWED_COMMANDS = {"python", "python3", "pytest", "git"}
-GIT_READ_ONLY = {"status", "diff", "log", "show", "branch", "rev-parse"}
+GIT_READ_ONLY = {"status", "diff", "log", "show", "rev-parse"}
+# Note for students: an earlier version also allowed "branch". It looks read-only, but
+# `git branch -D main` deletes a branch and `git branch new` creates one.
+# A read-only subcommand is not enough either: some options write files. For example
+# `git diff --output=../file` writes OUTSIDE the workspace. run_command() blocks those:
+GIT_BLOCKED_OPTIONS = ("--output",)
+PYTHON_NAMES = {"python", "python3"}
+# "python" is run as sys.executable: the same interpreter (and virtual environment) that
+# runs this harness. Note for students: an earlier version ran plain "python", which is
+# whatever the system PATH finds first. That can be a different Python without the
+# workshop packages, so every check failed with "sentence-transformers is not installed".
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", ".venv-win"}
 BLOCKED_FILES = {".env", ".env.local"}
 
@@ -59,7 +76,8 @@ BLOCKED_FILES = {".env", ".env.local"}
 READ_ONLY_PATHS = ("data", "eval/questions.json")
 
 # The standard checks for this workshop. run_check() returns a compact summary, so a
-# failing run does not flood the context window.
+# failing run does not flood the context window. ("python" here becomes sys.executable,
+# see PYTHON_NAMES above.)
 CHECKS = {
     "smoke": ["python", "scripts/smoke_test.py"],
     "eval": ["python", "eval_runner.py"],
@@ -214,6 +232,10 @@ def run_command(argv):
         return {"ok": False, "error": f"command not allowed: {argv[0]}; allowed: {sorted(ALLOWED_COMMANDS)}"}
     if program == "git" and (len(argv) < 2 or argv[1] not in GIT_READ_ONLY):
         return {"ok": False, "error": f"only read-only git subcommands are allowed: {sorted(GIT_READ_ONLY)}"}
+    if program == "git" and any(part.startswith(GIT_BLOCKED_OPTIONS) for part in argv[2:]):
+        return {"ok": False, "error": f"git options that write files are not allowed: {', '.join(GIT_BLOCKED_OPTIONS)}"}
+    if program in PYTHON_NAMES:
+        argv = [sys.executable, *argv[1:]]  # the harness's own Python (see PYTHON_NAMES)
     try:
         completed = subprocess.run(
             argv, cwd=WORKSPACE, capture_output=True, text=True,
@@ -381,10 +403,15 @@ def log_event(event, **details):
         file.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
 
 
-def trim_messages(messages):
-    """Keep the system prompt and the newest messages under MAX_CONTEXT_CHARS.
-    Never start with an orphan tool result: the model needs the request that caused it."""
-    system, rest = messages[0], messages[1:]
+def trim_messages(messages, pinned=1):
+    """Keep the first `pinned` messages and the newest others under MAX_CONTEXT_CHARS.
+    run_agent() pins the system prompt, the history and the task, so the model never
+    loses its goal. Never start with an orphan tool result: the model needs the request
+    that caused it.
+    Note for students: an earlier version pinned only the system prompt. After about
+    60,000 characters of tool output, the task itself was trimmed away and the model
+    kept working without knowing what it had been asked to do."""
+    head, rest = messages[:pinned], messages[pinned:]
     kept, total = [], 0
     for message in reversed(rest):
         size = len(message.get("content", ""))
@@ -395,7 +422,7 @@ def trim_messages(messages):
     kept.reverse()
     if kept and kept[0]["role"] == "user" and kept[0]["content"].startswith("Tool result:"):
         kept.pop(0)
-    return [system] + kept
+    return head + kept
 
 
 # ---------------------------------------------------------------- the loop
@@ -403,10 +430,22 @@ def run_agent(task, history=None):
     """Give the model one coding task and run the tool loop until it answers.
     Returns a dict with: question, answer, sources (files changed), steps,
     tools_used, stopped, seconds, history."""
+    # llm.chat() reads config.MAX_OUTPUT_TOKENS on every call. Raise it for this task only,
+    # and put the Q&A value back afterwards (see MAX_REPLY_TOKENS).
+    qa_limit = config.MAX_OUTPUT_TOKENS
+    config.MAX_OUTPUT_TOKENS = max(qa_limit, MAX_REPLY_TOKENS)
+    try:
+        return _run_task(task, history)
+    finally:
+        config.MAX_OUTPUT_TOKENS = qa_limit
+
+
+def _run_task(task, history):
     started = time.monotonic()
     messages = [{"role": "system", "content": system_prompt()}]
     messages += (history or [])[-MAX_HISTORY_MESSAGES:]
     messages.append({"role": "user", "content": task})
+    pinned = len(messages)  # system prompt + history + task: trim_messages() never drops these
     log_event("task", task=task, provider=config.LLM_PROVIDER,
               model=config.PROVIDERS[config.LLM_PROVIDER]["model"])
 
@@ -466,7 +505,7 @@ def run_agent(task, history=None):
             last_check = {"name": action["args"].get("name"), "ok": bool(tool_result.get("ok")), "step": step}
         log_event("tool", step=step, call=action, result=output)
         messages.append({"role": "user", "content": f"Tool result: {output}"})
-        messages = trim_messages(messages)
+        messages = trim_messages(messages, pinned)
 
     if result["stopped"] is None:  # the loop used all its steps without an answer
         result["stopped"] = "max_steps"
