@@ -50,7 +50,9 @@ MAX_OUTPUT_TOKENS = 800      # longest reply we accept (models that "think" firs
 # ------------------------------------------------------------
 # To swap the documents, point this at another folder with the same layout:
 #   docs/ (the .txt, .md and .pdf files), sources.csv, deadlines.csv
-CORPUS_DIR = ROOT / "data" / "sample"
+# Or set the CORPUS_DIR environment variable, e.g. CORPUS_DIR=data/kfupm, without editing this file.
+import os
+CORPUS_DIR = ROOT / os.environ.get("CORPUS_DIR", "data/sample")
 
 # Small (90 MB) and fast, English only. It reads at most ~256 words per chunk.
 # For Arabic documents use "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" (470 MB).
