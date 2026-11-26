@@ -45,12 +45,11 @@ MAX_CONTEXT_CHARS = 60_000         # hard cap on the conversation sent to the mo
 MAX_FILE_CHARS = 20_000            # cap on one read_file result
 MAX_OUTPUT_CHARS = 4_000           # cap on one run_command result
 COMMAND_TIMEOUT_SECONDS = 120      # cap on one command
-# Longest reply the model may write in one step. A coding agent puts whole functions (or
-# whole files) inside one JSON reply, so it needs far more room than a Q&A agent.
-# Note for students: config.MAX_OUTPUT_TOKENS = 800 is enough when the agent is a Q&A
-# agent (agent.py), whose replies are short tool calls and short answers. Here, 800 cuts
-# a write_file/edit_file reply in half: the JSON breaks and the loop fills with bad_json
-# errors. run_agent() raises the limit to this value while it runs, then puts it back.
+# Longest reply the model may write in one step. run_agent() uses it while a task runs,
+# then puts config.MAX_OUTPUT_TOKENS back.
+# Note for students: choose the limit for the agent you are building:
+#   - Q&A agent (agent.py): 800 (config.MAX_OUTPUT_TOKENS). Replies are short tool calls and answers.
+#   - coding agent (this file): 8_000. Replies carry whole functions or files inside the JSON.
 MAX_REPLY_TOKENS = 8_000
 VERBOSE = True
 LOG_FILE = config.ROOT / "logs" / "harness.jsonl"
@@ -58,16 +57,19 @@ LOG_FILE = config.ROOT / "logs" / "harness.jsonl"
 # No shell: the model passes argv as a list, and only these programs are allowed.
 ALLOWED_COMMANDS = {"python", "python3", "pytest", "git"}
 GIT_READ_ONLY = {"status", "diff", "log", "show", "rev-parse"}
-# Note for students: an earlier version also allowed "branch". It looks read-only, but
-# `git branch -D main` deletes a branch and `git branch new` creates one.
-# A read-only subcommand is not enough either: some options write files. For example
-# `git diff --output=../file` writes OUTSIDE the workspace. run_command() blocks those:
+# Note for students: choose the git subcommands for what the agent may do:
+#   - agent that only inspects the repo: status, diff, log, show, rev-parse (this list).
+#   - agent that also manages branches: add "branch" (it can create and delete branches,
+#     e.g. `git branch -D main`).
+# Some options write files even in a read-only subcommand, e.g. `git diff --output=<file>`,
+# so run_command() blocks these:
 GIT_BLOCKED_OPTIONS = ("--output",)
 PYTHON_NAMES = {"python", "python3"}
-# "python" is run as sys.executable: the same interpreter (and virtual environment) that
-# runs this harness. Note for students: an earlier version ran plain "python", which is
-# whatever the system PATH finds first. That can be a different Python without the
-# workshop packages, so every check failed with "sentence-transformers is not installed".
+# Note for students: choose which Python runs the commands and checks:
+#   - sys.executable (this file): the same interpreter and virtual environment as the
+#     harness, so the checks see the workshop packages.
+#   - plain "python": the first Python on the system PATH. Use it when that is the Python
+#     you installed the workshop packages into.
 SKIP_DIRS = {".git", "__pycache__", "node_modules", ".venv", ".venv-win"}
 BLOCKED_FILES = {".env", ".env.local"}
 
@@ -408,9 +410,10 @@ def trim_messages(messages, pinned=1):
     run_agent() pins the system prompt, the history and the task, so the model never
     loses its goal. Never start with an orphan tool result: the model needs the request
     that caused it.
-    Note for students: an earlier version pinned only the system prompt. After about
-    60,000 characters of tool output, the task itself was trimmed away and the model
-    kept working without knowing what it had been asked to do."""
+    Note for students: choose what to pin for the agent you are building:
+      - short Q&A turns: pinned=1 (only the system prompt) is enough.
+      - long coding tasks: pin the task too (run_agent() does), so the model keeps its
+        goal after old tool output is trimmed away."""
     head, rest = messages[:pinned], messages[pinned:]
     kept, total = [], 0
     for message in reversed(rest):
