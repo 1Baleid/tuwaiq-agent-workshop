@@ -52,6 +52,9 @@ PROVIDERS = {
 LLM_TIMEOUT_SECONDS = 60     # give up on ONE LLM call after this many seconds
 LLM_MAX_RETRIES = 3          # Session 4: how many times to retry a failed call (429, timeout, ...)
 MAX_OUTPUT_TOKENS = 800      # longest reply we accept (models that "think" first need room)
+# Note for students: choose the limit for the agent you are building:
+#   - Q&A agent (agent.py): 800. Replies are short tool calls and answers.
+#   - coding agent (harness_solution.py): 8000 (its MAX_REPLY_TOKENS). Replies carry code.
 
 # ------------------------------------------------------------
 # 2. Documents and search  (Sessions 1-2)
