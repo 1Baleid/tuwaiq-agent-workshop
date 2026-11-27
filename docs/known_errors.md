@@ -16,21 +16,22 @@ providers' official docs and the T1 research.
 | `No matching distribution found for torch==2.11.0` on a Mac | Intel Macs have no PyTorch wheels any more | Use Colab | 2 min, then Colab |
 | Installing on Linux downloads ~3 GB (`nvidia-…` packages) | PyPI's Linux torch includes CUDA | First run `pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu`, then the rest | 5 min, then Colab |
 | `No matching distribution found for faiss-cpu==1.15.1` on an older Mac | faiss wheels need macOS 14+ (Apple Silicon) or 15+ (Intel) | Delete the `faiss-cpu==…` line from `requirements.txt` and run the install again. `rag.py` then uses plain numpy search (same results) | 5 min |
-| pip cannot find the pinned versions, or the Python version is shown as 3.9 or older | Python too old | Install Python 3.13 from python.org, or use Colab | 10 min, then Colab |
+| pip cannot find the pinned versions, or the Python version is shown as 3.9 or older | Python too old | Install Python 3.14 from python.org, or use Colab (Python 3.13) | 10 min, then Colab |
 | Very slow model or package downloads on the room Wi-Fi | 30 laptops sharing one connection | Use Colab (downloads happen on Google's network); laptop students should run the smoke test at home | 5 min, then Colab |
 
 ## 2. Keys and accounts
 
 | Symptom | Cause | Fix | Time limit |
 |---|---|---|---|
-| `Colab could not read the secret GROQ_API_KEY (SecretNotFoundError)` | No secret with exactly that name | Secrets (key icon) → name exactly `GROQ_API_KEY` (or `GEMINI_API_KEY`) → run the cell again | 5 min |
+| `Colab could not read the secret OPENROUTER_API_KEY (SecretNotFoundError)` | No secret with exactly that name | Secrets (key icon) → name exactly `OPENROUTER_API_KEY` (or `GEMINI_API_KEY`) → run the cell again | 5 min |
 | `Colab could not read the secret … (NotebookAccessError)` | "Notebook access" switch is off for this notebook | Turn **Notebook access** on next to the secret, run again | 2 min |
-| `No GROQ_API_KEY found. Copy .env.example to .env …` (laptop) | No `.env` file, or the key line is empty | Copy `.env.example` to `.env` in the project folder, paste the key after `GROQ_API_KEY=` | 5 min |
-| `AuthenticationError` / `401` / `Invalid API Key` (Groq), or `BadRequestError` / `400` with `Please pass a valid API key` or `Invalid Auth key` (Google) **(seen)** | Key copied wrongly (missing characters, spaces) or deleted | Create a new key, replace it in Secrets or `.env`, run the cell again. No restart needed: `llm.py` reads the key on every call | 5 min, then the local model |
+| `No OPENROUTER_API_KEY found. Copy .env.example to .env …` (laptop) | No `.env` file, or the key line is empty | Copy `.env.example` to `.env` in the project folder, paste the key after `OPENROUTER_API_KEY=` | 5 min |
+| `AuthenticationError` / `401` / `Invalid API Key` (OpenRouter), or `BadRequestError` / `400` with `Please pass a valid API key` or `Invalid Auth key` (Google) **(seen)** | Key copied wrongly (missing characters, spaces) or deleted | Create a new key, replace it in Secrets or `.env`, run the cell again. No restart needed: `llm.py` reads the key on every call | 5 min, then the local model |
+| `402` / "no credits left" (OpenRouter) | The OpenRouter account has no credit | Add credit at https://openrouter.ai/credits, or ask the instructor for a workshop key | 5 min |
 | AI Studio says you must be **18 or older**, or asks for ID or card verification | Google's age rule | Do not try to get around it. The student uses the local model (`LLM_PROVIDER = "local"`) | stop at once |
 | AI Studio: "access restricted by your admin" | A university / Workspace account | Use a personal Gmail account | 2 min |
-| Gemini `401 … ACCESS_TOKEN_TYPE_UNSUPPORTED` | Reported in Oct 2026 with some new Google "auth keys" | Create a new key in a new project in AI Studio, or use Groq | 5 min |
-| Gemini `403 PERMISSION_DENIED`, "Free tier unavailable" | This Google Cloud project is not allowed the free tier | Create a new project in AI Studio, or use Groq | 5 min |
+| Gemini `401 … ACCESS_TOKEN_TYPE_UNSUPPORTED` | Reported in Oct 2026 with some new Google "auth keys" | Create a new key in a new project in AI Studio, or use OpenRouter | 5 min |
+| Gemini `403 PERMISSION_DENIED`, "Free tier unavailable" | This Google Cloud project is not allowed the free tier | Create a new project in AI Studio, or use OpenRouter | 5 min |
 | Creating a new Google account asks for a phone number | Google's anti-abuse check | Use your own phone number, at home, before the workshop | n/a |
 
 ## 3. Rate limits and provider errors

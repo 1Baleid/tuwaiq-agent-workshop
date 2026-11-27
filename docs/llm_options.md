@@ -1,5 +1,8 @@
 # LLM options: free tiers compared (ticket T1)
 
+> **Update 2026-11-27:** the workshop now runs on **OpenRouter + DeepSeek** (`deepseek/deepseek-chat`).
+> This page is kept as the original free-tier comparison; see the README for the current setup.
+
 Checked on **2026-11-02**, from a home connection in Saudi Arabia. Limits and terms come from each provider's official docs (links at the end). Measurements were taken on this laptop: Windows 10, GTX 1060 6 GB.
 **Status:** comparison only. Choosing the provider is ticket T2 and needs the technical lead's approval.
 
