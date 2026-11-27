@@ -80,7 +80,7 @@ providers' official docs and the T1 research.
 | The answer is right but cites nothing, or the model answered without searching **(seen with the small local model)** | Small models sometimes answer from memory | Expected sometimes. A good discussion point for S3 ("raw model vs harness"). A stronger model (Groq) does it less | n/a |
 | `"I don't know"` for a question that **is** in the documents | The file was not loaded (look for `Skipped … file(s)` when the index is built), `MIN_SCORE` is too high, or the chunks are too small or too big | Check the loader's output and `rag.search(rag.get_store(), "your question")` scores. Lower `MIN_SCORE` a little. Rebuild | 10 min |
 | Calculator error `'(2, 400 * 1.15)' is not allowed …` | The model wrote a number with a thousands comma, `2,400` | Normally the model retries without the comma. Otherwise rephrase without commas | 5 min |
-| `Warning: chunk/model/corpus settings changed since build_store(). Run build_store() again.` | A store built before `CHUNK_SIZE` (etc.) was changed | Build it again: `store = rag.build_store()` (`rag.get_store()` rebuilds by itself) | 2 min |
+| `Warning: chunk/model/corpus settings changed since build_index(). Build the index again.` | An index built before `CHUNK_SIZE` (etc.) was changed | Build it again: `index = rag.build_store()` (`rag.get_index()` rebuilds by itself) | 2 min |
 
 ## 7. Data and documents
 

@@ -27,8 +27,8 @@ python scripts/smoke_test.py
 | File | Session | What it does |
 |---|---|---|
 | `config.py` | all | **Every setting**, including the one LLM switch `LLM_PROVIDER` |
-| `rag.py` | 1 | load documents → chunks → embeddings → FAISS index → `search()` |
-| `answer.py` | 2 | answer from the best chunks, with citations like `[course_credit.txt#3]`, or "I don't know" |
+| `rag.py` | 1 | `load_documents()` → `chunk_text()` → `embed()` → `build_index()` (ChromaDB) → `search_docs()` |
+| `answer.py` | 2 | `format_passages()` → `build_prompt()` → `extract_citations()` → `answer()`: cited answers like `[1]`, or "I don't know" |
 | `tools.py` | 3 | the tool registry: `search_docs`, `calculator`, `get_deadline`, plus `validate_call()` |
 | `agent.py` | 3–4 | the agent loop: tool calls as plain JSON, validation, step limit, timeout, retries, log file |
 | `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S4) |
@@ -45,9 +45,10 @@ All in `config.py`, as plain variables. Functions read them **when they run**, s
 
 | Setting | Default | Try |
 |---|---|---|
-| `CHUNK_SIZE` / `CHUNK_OVERLAP` | 500 / 100 characters | 50 or 3000: search results get worse |
-| `TOP_K` | 4 chunks per search | 1: answers miss facts |
-| `MIN_SCORE` | 0.40 | 0.0: off-topic questions now come with "sources", so only the LLM stands between you and a made-up answer |
+| `CHUNK_SIZE` / `CHUNK_OVERLAP` | 120 / 20 words | 15 or 1000: search results get worse |
+| `CHUNK_BY_SECTION` | `False` | `True`: one chunk per section, labelled with its heading (the fix) |
+| `TOP_K` | 3 chunks per search | 1: answers miss facts |
+| `MIN_SCORE` | 0.55 | 0.0: off-topic questions now come with "sources", so only the LLM stands between you and a made-up answer |
 | `MAX_STEPS` | 5 LLM calls per question | 1: tool questions stop before answering |
 | `AGENT_TIMEOUT_SECONDS` / `LLM_TIMEOUT_SECONDS` | 120 / 60 | 1: watch timeouts and retries |
 | `LLM_PROVIDER` | `"groq"` | `"local"`: the fallback model (see below) |
@@ -110,9 +111,9 @@ For Arabic documents, also change `EMBEDDING_MODEL` (see the comment in `config.
 ## Versions
 
 Pinned in `requirements.txt` (laptops): every version equals Google Colab's preinstalled version
-(November 2026, Python 3.13). `requirements-colab.txt` adds only what Colab lacks (`faiss-cpu`, `pypdf`).
-FAISS was chosen over ChromaDB: on Colab it installs one package with no conflicts, while ChromaDB pulls
-~84 packages, upgrades Colab's own packages, and needs the Visual C++ runtime on Windows.
+(November 2026, Python 3.13). `requirements-colab.txt` adds only what Colab lacks (`chromadb`, `pypdf`).
+The vector database is ChromaDB, as in the slides. It pulls in many packages (and can upgrade some of Colab's own);
+if it will not install, `rag.py` falls back to plain numpy search with the same results.
 
 ## Docs
 

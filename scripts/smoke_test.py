@@ -24,7 +24,7 @@ if str(ROOT) not in sys.path:
 
 # The versions we tested with (the same as Google Colab in November 2026).
 TESTED = {"openai": "2.54.0", "python-dotenv": "1.2.4", "sentence-transformers": "5.7.0", "torch": "2.11.0",
-          "numpy": "2.4.6", "pandas": "2.2.3", "faiss-cpu": "1.15.1", "pypdf": "6.21.4"}
+          "numpy": "2.4.6", "pandas": "2.2.3", "chromadb": "1.5.9", "pypdf": "6.21.4"}
 state = {}  # things one check makes and a later check uses (the search store)
 
 
@@ -40,8 +40,8 @@ def check_packages():
         try:
             installed = importlib.metadata.version(package)
         except importlib.metadata.PackageNotFoundError:
-            if package == "faiss-cpu":  # rag.py falls back to numpy without it
-                notes.append("faiss-cpu missing (numpy search will be used)")
+            if package == "chromadb":  # rag.py falls back to numpy without it
+                notes.append("chromadb missing (numpy search will be used)")
                 continue
             raise RuntimeError(f"{package} is not installed. Run: pip install -r requirements.txt") from None
         if installed.split("+")[0] != tested:

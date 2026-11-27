@@ -1,81 +1,113 @@
 """
-rag.py - Session 1: from documents to a searchable index.
+rag.py - Session 1: from documents to a searchable index. Fill in the short TODOs.
 
-    documents  ->  chunks  ->  embeddings (vectors)  ->  index  ->  search
+    documents  ->  chunks  ->  embeddings  ->  index  ->  search_docs()
+
+  Lab 1  load_documents()    read every .md / .txt file (TODO 1-2)
+  Lab 2  chunk_text()        cut a text into pieces of words that overlap (TODO 3-4)
+  Lab 3  embed()             turn text into meaning-vectors; compare with keyword_search()
+  Lab 4  numpy_search()      search by hand (TODO 5), then build_index() with ChromaDB (TODO 6)
+         search_docs()       find the closest chunks, distance -> score (TODO 7)
+  Fix    chunk_by_section()  one chunk per section, labelled with its heading (TODO 8)
+
+search_docs() must return a list of {"text", "source", "chunk", "score", "id"}, best first.
+Session 2 (answer.py) and the harness (tools.py) use it.
 
     import rag
-    store = rag.build_store()            # load, chunk, embed and index the corpus
-    for hit in rag.search(store, "How many hours is one credit?"):
-        print(round(hit["score"], 2), hit["id"], hit["text"][:80])
-
-Later sessions call rag.get_store(), which builds the store once and reuses it.
+    index = rag.build_index(rag.make_chunks(rag.load_documents()))
+    for hit in rag.search_docs("Can I quit a class after the first week?", k=3, index=index):
+        print(round(hit["score"], 2), hit["source"], hit["chunk"], hit["text"][:80])
 """
+import glob
+import os
+import re
+from pathlib import Path
+
 import numpy as np
 
 import config
 
 try:
-    import faiss  # FAISS: a fast library for searching vectors
-except ImportError:  # no faiss for this computer (e.g. an older Mac): plain numpy below does the same job
-    faiss = None
+    import chromadb  # ChromaDB: a vector database
+except ImportError:  # no chromadb on this computer: plain numpy below does the same job
+    chromadb = None
 
 _embedders = {}  # embedding models we already loaded, by name
-_store = None    # the store get_store() built last
+_index = None    # the index get_index() built last
 
 
-# ---------------------------------------------------------------- 1. load
+# ---------------------------------------------------------------- Lab 1: load
 def read_file(path):
-    """The text of one document, or None if we cannot read this kind of file."""
-    if path.suffix.lower() in (".txt", ".md"):
-        return path.read_text(encoding="utf-8")
-    if path.suffix.lower() == ".pdf":
+    """The text of one file, or None if we cannot read this kind of file (yet)."""
+    path = Path(path)
+    if path.suffix.lower() in (".md", ".txt"):
+        with open(path, encoding="utf-8") as f:
+            # TODO 1: read the whole file and return its text.
+            raise NotImplementedError("TODO 1: read the whole file and return its text")
+    if path.suffix.lower() == ".pdf":  # PDFs need a library to read them: given
         from pypdf import PdfReader
         return "\n".join(page.extract_text() or "" for page in PdfReader(path).pages)
     return None
 
 
-def load_documents(corpus_dir=None):
-    """Read every document in <corpus>/docs that read_file() understands (.txt, .md, .pdf).
-    Returns a list of {"source": file name, "text": the whole text}."""
-    folder = (corpus_dir or config.CORPUS_DIR) / "docs"
-    documents, skipped = [], []
-    for path in sorted(folder.iterdir()):
+def load_documents(folder=None):
+    """Read every document in the folder (default: <corpus>/docs).
+    Each document becomes {"source": "course_credit.txt", "text": "A course credit is ..."}."""
+    folder = Path(folder or config.CORPUS_DIR / "docs")
+    docs, skipped = [], []
+    for path in sorted(glob.glob(str(folder / "*"))):
         text = read_file(path)
         if text is None:
-            skipped.append(path.name)
-        else:
-            documents.append({"source": path.name, "text": text})
-    print(f"Loaded {len(documents)} documents from {folder}")
+            skipped.append(os.path.basename(path))
+            continue
+        # TODO 2: add {"source": the file name (os.path.basename(path)), "text": text} to docs.
+    print(f"Loaded {len(docs)} documents from {folder}")
+    for doc in docs:
+        print(f"  {doc['source']}: {len(doc['text'].split())} words")
     if skipped:
         print(f"Skipped {len(skipped)} file(s) this loader cannot read: {', '.join(skipped)}")
-    return documents
+    return docs
 
 
-# ---------------------------------------------------------------- 2. chunk
-def chunk_text(text, size=None, overlap=None):
-    """Cut text into pieces of `size` characters. Each piece starts `overlap` characters
-    before the previous one ended, so a sentence cut at a border is still whole somewhere."""
-    size = size or config.CHUNK_SIZE
+# ---------------------------------------------------------------- Lab 2: chunk
+def chunk_text(text, chunk_size=None, overlap=None):
+    """Cut text into chunks of `chunk_size` words. Neighbouring chunks share `overlap` words,
+    so a sentence cut at a border is still whole in one of them.
+
+    chunk_text("one two three four five six seven eight nine ten", 4, 1)
+    -> ['one two three four', 'four five six seven', 'seven eight nine ten']"""
+    chunk_size = chunk_size or config.CHUNK_SIZE
     overlap = config.CHUNK_OVERLAP if overlap is None else overlap
-    if overlap >= size:
+    if overlap >= chunk_size:
         raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
-    # TODO (Session 1): cut `text` into chunks of `size` characters that overlap by `overlap`
-    raise NotImplementedError('TODO (Session 1): cut `text` into chunks of `size` characters that overlap by `overlap`')
-
-
-def make_chunks(documents):
-    """Chunk every document. Each chunk remembers where it came from, e.g. id 'course_credit.txt#3'."""
+    words = text.split()
+    # TODO 3: step = how many words each chunk starts after the previous one (chunk_size and overlap).
+    raise NotImplementedError("TODO 3-4: set step, then slice chunk_words")
     chunks = []
-    for doc in documents:
-        for number, text in enumerate(chunk_text(doc["text"]), start=1):
-            chunks.append({"id": f"{doc['source']}#{number}", "source": doc["source"], "text": text})
+    for start in range(0, len(words), step):
+        # TODO 4: chunk_words = the chunk_size words that begin at `start`.
+        chunks.append(" ".join(chunk_words))
+        if start + chunk_size >= len(words):  # this chunk reached the end of the text
+            break
     return chunks
 
 
-# ---------------------------------------------------------------- 3. embed
+def make_chunks(documents):
+    """Chunk every document. Each chunk remembers where it came from:
+    {"id": "course_credit.txt#0", "source": "course_credit.txt", "chunk": 0, "text": "..."}"""
+    chunks = []
+    for doc in documents:
+        pieces = chunk_by_section(doc) if config.CHUNK_BY_SECTION else chunk_text(doc["text"])
+        for number, text in enumerate(pieces):
+            chunks.append({"id": f"{doc['source']}#{number}", "source": doc["source"],
+                           "chunk": number, "text": text})
+    return chunks
+
+
+# ---------------------------------------------------------------- Lab 3: embed
 def embed(texts):
-    """Turn texts into vectors, one row per text. Texts with similar meaning get similar vectors.
-    The first call downloads the embedding model (about 90 MB)."""
+    """Turn texts into meaning-vectors, one row per text (384 numbers each for all-MiniLM-L6-v2).
+    Texts with similar meaning get nearby vectors. The first call downloads the model (about 90 MB)."""
     name = config.EMBEDDING_MODEL
     if name not in _embedders:
         from huggingface_hub.utils import logging as hf_logging
@@ -87,54 +119,162 @@ def embed(texts):
     return np.asarray(vectors, dtype="float32")
 
 
-# ---------------------------------------------------------------- 4. index
-class NumpyIndex:
-    """The same job as faiss.IndexFlatIP, in plain numpy. Used only when faiss is missing."""
+def similarity(text_a, text_b):
+    """Cosine similarity of two texts: about 1 = same meaning, about 0 = unrelated."""
+    a, b = embed([text_a, text_b])
+    return float(a @ b)
 
-    def __init__(self, vectors):
-        self.vectors = vectors
 
-    def search(self, queries, k):
-        scores = queries @ self.vectors.T                    # similarity to every chunk
-        rows = np.argsort(-scores, axis=1)[:, :k]           # positions of the k best
-        return np.take_along_axis(scores, rows, axis=1), rows
+def keyword_search(query, chunks, k=3):
+    """The old way, to compare: count the words a chunk shares with the query.
+    It has no idea that "quit" means "withdraw"."""
+    query_words = set(re.findall(r"\w+", query.lower()))
+    scored = []
+    for chunk in chunks:
+        shared = query_words & set(re.findall(r"\w+", chunk["text"].lower()))
+        scored.append({**chunk, "score": len(shared), "shared": sorted(shared)})
+    return sorted(scored, key=lambda hit: -hit["score"])[:k]
+
+
+# ---------------------------------------------------------------- Lab 4: index & search
+def numpy_search(query, chunks, vectors, k=3):
+    """Search by hand: compare the query with every chunk, sort, keep the top k.
+    `vectors` = embed([chunk["text"] for chunk in chunks])."""
+    query_vector = embed([query])[0]
+    # TODO 5: scores = one similarity per chunk, in ONE numpy line (dot product of vectors and query_vector).
+    raise NotImplementedError("TODO 5: one numpy line for the scores")
+    best = np.argsort(-scores)[:k]  # positions of the k highest scores
+    return [{**chunks[i], "score": float(scores[i])} for i in best]
+
+
+class NumpyCollection:
+    """The same job as a Chroma collection, in plain numpy. Used only when chromadb is missing."""
+
+    def add(self, ids, embeddings, documents, metadatas):
+        self.ids, self.documents, self.metadatas = ids, documents, metadatas
+        self.vectors = np.asarray(embeddings, dtype="float32")
+
+    def count(self):
+        return len(self.ids)
+
+    def query(self, query_embeddings, n_results, where=None):
+        rows = [i for i, meta in enumerate(self.metadatas)
+                if not where or all(meta.get(key) == value for key, value in where.items())]
+        distances = 1 - self.vectors[rows] @ np.asarray(query_embeddings[0], dtype="float32")
+        best = [rows[i] for i in np.argsort(distances)[:n_results]]
+        return {"ids": [[self.ids[i] for i in best]],
+                "documents": [[self.documents[i] for i in best]],
+                "metadatas": [[self.metadatas[i] for i in best]],
+                "distances": [sorted(distances)[:n_results]]}
+
+
+def new_collection():
+    """An empty collection that measures cosine distance (ChromaDB, or numpy when it is missing).
+    The index lives in memory; chromadb.PersistentClient(path="index") would save it to disk."""
+    if chromadb is None:
+        print("chromadb is not installed: using plain numpy search instead (same results)")
+        return NumpyCollection()
+    client = chromadb.EphemeralClient(settings=chromadb.Settings(anonymized_telemetry=False))
+    try:
+        client.delete_collection("docs")  # start empty, also when we rebuild
+    except Exception:
+        pass
+    # embedding_function=None: we give Chroma our own vectors (from embed())
+    return client.create_collection("docs", metadata={"hnsw:space": "cosine"}, embedding_function=None)
+
+
+def build_index(chunks):
+    """Embed every chunk and store it in a vector database. Returns the index search_docs() needs."""
+    vectors = embed([chunk["text"] for chunk in chunks])
+    collection = new_collection()
+    # TODO 6: fill in embeddings (vectors.tolist()) and metadatas ({"source": ..., "chunk": ...} per chunk).
+    raise NotImplementedError("TODO 6: give Chroma the embeddings and the sources")
+    collection.add(
+        ids=[chunk["id"] for chunk in chunks],
+        embeddings=...,
+        documents=[chunk["text"] for chunk in chunks],
+        metadatas=...,
+    )
+    print(f"Indexed {len(chunks)} chunks (CHUNK_SIZE={config.CHUNK_SIZE} words, "
+          f"CHUNK_OVERLAP={config.CHUNK_OVERLAP}, CHUNK_BY_SECTION={config.CHUNK_BY_SECTION})")
+    return {"collection": collection, "chunks": chunks, "vectors": vectors, "settings": _settings()}
+
+
+def search_docs(query, k=None, index=None):
+    """Find the k chunks closest in meaning to the query, best first.
+    Returns [{"text", "source", "chunk", "score", "id"}, ...]; higher score = closer in meaning."""
+    k = k or config.TOP_K
+    index = index or get_index()
+    if index["settings"] != _settings():
+        print("Warning: chunk/model/corpus settings changed since build_index(). Build the index again.")
+    found = index["collection"].query(query_embeddings=embed([query]).tolist(),
+                                      n_results=min(k, index["collection"].count()))
+    results = []
+    for chunk_id, text, meta, distance in zip(found["ids"][0], found["documents"][0],
+                                              found["metadatas"][0], found["distances"][0]):
+        # TODO 7: add {"id", "text", "source", "chunk", "score"} to results. Chroma gives a distance:
+        #         score = 1 - distance (higher = closer in meaning). source and chunk are in meta.
+        raise NotImplementedError("TODO 7: build each result; score = 1 - distance")
+    return results
+
+
+# ---------------------------------------------------------------- The fix: chunk by section
+HEADING = re.compile(r"^\s*(?:#{1,6}\s+(.+?)|=+\s*(.+?)\s*=+)\s*$")  # "## Refunds" or "== Refunds =="
+
+
+def split_sections(text):
+    """Split a text at its headings: [(heading, body), ...]. Text before the first heading has heading None."""
+    sections, heading, lines = [], None, []
+    for line in text.splitlines():
+        match = HEADING.match(line)
+        if match:
+            sections.append((heading, "\n".join(lines)))
+            heading, lines = (match.group(1) or match.group(2)).strip(), []
+        else:
+            lines.append(line)
+    sections.append((heading, "\n".join(lines)))
+    return [(heading, body) for heading, body in sections if body.strip()]
+
+
+def chunk_by_section(doc):
+    """One chunk per section, each starting with its address, e.g. "Course credit > Australia: ...".
+    A section longer than CHUNK_SIZE words is cut with chunk_text(), and every piece keeps the label."""
+    title = Path(doc["source"]).stem.replace("_", " ").capitalize()  # "course_credit.txt" -> "Course credit"
+    chunks = []
+    for heading, body in split_sections(doc["text"]):
+        label = f"{title} > {heading}" if heading else title
+        for piece in chunk_text(body):
+            # TODO 8: add the piece to chunks with its label in front: "<label>: <piece>".
+            raise NotImplementedError("TODO 8: put the label in front of each piece")
+    return chunks
+
+
+# ---------------------------------------------------------------- one shared index
+def _settings():
+    return (config.CHUNK_SIZE, config.CHUNK_OVERLAP, config.CHUNK_BY_SECTION,
+            config.EMBEDDING_MODEL, str(config.CORPUS_DIR))
 
 
 def build_store(documents=None):
-    """Load, chunk, embed and index the corpus. Returns the 'store' that search() needs."""
+    """Load, chunk, embed and index the whole corpus in one call."""
     documents = load_documents() if documents is None else documents
-    chunks = make_chunks(documents)
-    vectors = embed([chunk["text"] for chunk in chunks])
-    if faiss is not None:
-        index = faiss.IndexFlatIP(vectors.shape[1])  # IP = inner product (cosine for normalized vectors)
-        index.add(vectors)
-    else:
-        print("faiss is not installed: using plain numpy search instead (same results)")
-        index = NumpyIndex(vectors)
-    print(f"Indexed {len(chunks)} chunks (CHUNK_SIZE={config.CHUNK_SIZE}, CHUNK_OVERLAP={config.CHUNK_OVERLAP})")
-    return {"index": index, "chunks": chunks, "settings": _settings()}
+    return build_index(make_chunks(documents))
 
 
-def _settings():
-    return config.CHUNK_SIZE, config.CHUNK_OVERLAP, config.EMBEDDING_MODEL, str(config.CORPUS_DIR)
+def get_index(rebuild=False):
+    """The index of the corpus in config.py: built the first time, then reused.
+    It is rebuilt automatically when you change CHUNK_SIZE, CHUNK_OVERLAP, CHUNK_BY_SECTION,
+    EMBEDDING_MODEL or CORPUS_DIR, and when you ask for it with rebuild=True."""
+    global _index
+    if rebuild or _index is None or _index["settings"] != _settings():
+        _index = build_store()
+    return _index
 
 
-def get_store(rebuild=False):
-    """The store for the corpus in config.py: built the first time, then reused.
-    It is rebuilt automatically if you change CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDING_MODEL or CORPUS_DIR,
-    and when you ask for it with rebuild=True (e.g. after changing the documents)."""
-    global _store
-    if rebuild or _store is None or _store["settings"] != _settings():
-        _store = build_store()
-    return _store
+# Names the harness (tools.py, agent.py), the chat server and Session 5 use.
+get_store = get_index
 
 
-# ---------------------------------------------------------------- 5. search
 def search(store, query, k=None):
-    """Return the k chunks most similar to the query, best first.
-    Each result is a chunk plus its "score" (higher = closer in meaning)."""
-    k = k or config.TOP_K
-    if store["settings"] != _settings():
-        print("Warning: chunk/model/corpus settings changed since build_store(). Run build_store() again.")
-    # TODO (Session 1): embed the query, ask store["index"] for the k best rows, return those chunks with their scores
-    raise NotImplementedError('TODO (Session 1): embed the query, ask store["index"] for the k best rows, return those chunks with their scores')
+    """search_docs() on a given index."""
+    return search_docs(query, k, index=store)

@@ -69,10 +69,11 @@ CORPUS_DIR = ROOT / os.environ.get("CORPUS_DIR", "data/sample")
 # For Arabic documents use "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" (470 MB).
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
-CHUNK_SIZE = 500             # characters per chunk
-CHUNK_OVERLAP = 100          # characters shared by two neighbouring chunks
-TOP_K = 4                    # how many chunks one search returns
-MIN_SCORE = 0.40             # Session 2: if no chunk scores this high, answer "I don't know"
+CHUNK_SIZE = 120             # words per chunk (about one paragraph)
+CHUNK_OVERLAP = 20           # words shared by two neighbouring chunks
+CHUNK_BY_SECTION = False     # Session 1 fix: True = one chunk per section, labelled with its heading
+TOP_K = 3                    # how many chunks one search returns
+MIN_SCORE = 0.55             # Session 2: if no chunk scores this high, answer "I don't know"
 
 # ------------------------------------------------------------
 # 3. The agent  (Sessions 3-4)
