@@ -22,21 +22,21 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # so `import config` works from any folder
 
-# The versions we tested with (the same as Google Colab in November 2026).
-TESTED = {"openai": "2.54.0", "python-dotenv": "1.2.4", "sentence-transformers": "5.7.0", "torch": "2.11.0",
-          "numpy": "2.4.6", "pandas": "2.2.3", "faiss-cpu": "1.15.1", "pypdf": "6.21.4"}
+# Expected versions from requirements.txt; pandas and scikit-learn are newer for Python 3.14 wheels.
+EXPECTED = {"openai": "2.54.0", "python-dotenv": "1.2.4", "sentence-transformers": "5.7.0", "torch": "2.11.0",
+            "numpy": "2.4.6", "pandas": "3.1.1", "scikit-learn": "1.9.1", "faiss-cpu": "1.15.1", "pypdf": "6.21.4"}
 state = {}  # things one check makes and a later check uses (the search store)
 
 
 def check_python():
     version = ".".join(map(str, sys.version_info[:3]))
-    note = "" if sys.version_info[:2] == (3, 13) else " (Colab uses 3.13; other versions usually work too)"
+    note = "" if sys.version_info[:2] in ((3, 13), (3, 14)) else " (project setup targets Python 3.13 and 3.14)"
     return f"Python {version}{note}"
 
 
 def check_packages():
     notes = []
-    for package, tested in TESTED.items():
+    for package, expected in EXPECTED.items():
         try:
             installed = importlib.metadata.version(package)
         except importlib.metadata.PackageNotFoundError:
@@ -44,10 +44,10 @@ def check_packages():
                 notes.append("faiss-cpu missing (numpy search will be used)")
                 continue
             raise RuntimeError(f"{package} is not installed. Run: pip install -r requirements.txt") from None
-        if installed.split("+")[0] != tested:
-            notes.append(f"{package} {installed} (tested {tested})")
+        if installed.split("+")[0] != expected:
+            notes.append(f"{package} {installed} (expected {expected})")
     import numpy, openai, sentence_transformers  # noqa: E401, F401  (installed is not enough: they must import)
-    return "all tested versions" if not notes else "OK, but: " + "; ".join(notes)
+    return "all expected versions" if not notes else "OK, but: " + "; ".join(notes)
 
 
 def check_embeddings():
