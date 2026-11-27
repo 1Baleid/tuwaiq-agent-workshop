@@ -162,7 +162,8 @@ async def main():
         sys.exit(f"Missing {p['key_name']}: add it to .env (see .env.example), then run again.")
     model = args.model or p["model"]
     # max_retries=0: we want to COUNT rate-limit errors, not have the SDK quietly retry them.
-    client = AsyncOpenAI(base_url=p["base_url"], api_key=key, max_retries=0)
+    client = AsyncOpenAI(base_url=p["base_url"], api_key=key, max_retries=0,
+                         default_headers=p.get("headers"))
 
     print(f"Scenario '{args.scenario}' on {args.provider} / {model}")
     start = time.perf_counter()

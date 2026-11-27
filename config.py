@@ -9,7 +9,8 @@ ROOT = Path(__file__).resolve().parent  # the project folder (where this file is
 # 1. Which LLM to use  (the ONE switch)
 # ------------------------------------------------------------
 # "groq", "gemini", "openrouter" or "local" (a small open model run by Ollama)
-LLM_PROVIDER = "groq"
+# Default: OpenRouter, using DeepSeek. See the "openrouter" entry below.
+LLM_PROVIDER = "openrouter"
 
 # All providers speak the same "OpenAI-compatible" API, so switching provider
 # only changes the address (base_url), the model name and which key to use.
@@ -29,9 +30,16 @@ PROVIDERS = {
     },
     "openrouter": {
         "base_url": "https://openrouter.ai/api/v1",
-        "model": "google/gemma-4-26b-a4b-it:free",
+        # DeepSeek's stable chat model on OpenRouter. Other DeepSeek slugs:
+        # "deepseek/deepseek-v4.1-flash" (cheaper, 1M context) or "deepseek/deepseek-v3.2".
+        "model": "deepseek/deepseek-chat",
         "key_name": "OPENROUTER_API_KEY",
         "options": {"temperature": 0},
+        # Optional OpenRouter headers (used for its dashboard/rankings).
+        "headers": {
+            "HTTP-Referer": "https://github.com/1Baleid/tuwaiq-agent-workshop",
+            "X-Title": "Tuwaiq Agent Workshop",
+        },
     },
     "local": {
         "base_url": "http://localhost:11434/v1",    # Ollama running on this machine / Colab VM
@@ -44,6 +52,9 @@ PROVIDERS = {
 LLM_TIMEOUT_SECONDS = 60     # give up on ONE LLM call after this many seconds
 LLM_MAX_RETRIES = 3          # Session 4: how many times to retry a failed call (429, timeout, ...)
 MAX_OUTPUT_TOKENS = 800      # longest reply we accept (models that "think" first need room)
+# Note for students: choose the limit for the agent you are building:
+#   - Q&A agent (agent.py): 800. Replies are short tool calls and answers.
+#   - coding agent (harness_solution.py): 8000 (its MAX_REPLY_TOKENS). Replies carry code.
 
 # ------------------------------------------------------------
 # 2. Documents and search  (Sessions 1-2)

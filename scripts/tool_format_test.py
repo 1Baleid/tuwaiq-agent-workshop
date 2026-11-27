@@ -101,7 +101,8 @@ def main():
     key = os.environ.get(p["key_name"]) if p["key_name"] else "not-needed"
     if not key:
         sys.exit(f"Missing {p['key_name']}: add it to .env (see .env.example).")
-    client = OpenAI(base_url=p["base_url"], api_key=key, max_retries=0, timeout=120)
+    client = OpenAI(base_url=p["base_url"], api_key=key, max_retries=0, timeout=120,
+                    default_headers=p.get("headers"))
     model = args.model or p["model"]
     print(f"{args.provider} / {model}")
 

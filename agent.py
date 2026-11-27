@@ -1,15 +1,14 @@
 """
-agent.py - Sessions 3 and 4: the agent loop (the "harness").
+agent.py - Sessions 3-4: the harness loop. Fill in the short TODOs.
 
-The LLM cannot run anything; it can only reply with text. This loop does the work:
-  1. send the question and the list of tools to the LLM
-  2. read the reply: a tool call {"tool": ..., "args": ...} or a final {"answer": ...}
-  3. check the tool call, run it, send the result back to the LLM, and go to 2
-  4. stop at an answer, after MAX_STEPS LLM calls, or after AGENT_TIMEOUT_SECONDS
+A model can only reply with text. This loop turns that text into work:
+  1. send the question and the tools to the LLM
+  2. read one JSON reply: {"tool": ...} or {"answer": ...}
+  3. if it is a tool call, run it and send the result back
+  4. stop at an answer, MAX_STEPS, or AGENT_TIMEOUT_SECONDS
 
-    import agent
-    result = agent.run_agent("When do final exams begin?")
-    print(result["answer"])
+run_agent() must return these keys: question, answer, sources, steps, tools_used,
+stopped, seconds, history. The chat server and eval runner use them.
 """
 import json
 import time
@@ -21,99 +20,101 @@ import llm
 import rag
 import tools
 
-SYSTEM_PROMPT = """You are a helpful assistant for KFUPM (King Fahd University of Petroleum & Minerals) students. You answer questions with these tools:
+# TODO 1-3: add these rules to the prompt below.
+# 1. Call search_docs before answering a document question.
+# 2. Cite sources like [course_credit.txt#3].
+# 3. Answer "{i_dont_know}" when the tools cannot help.
+SYSTEM_PROMPT = """You are a helpful assistant. Use the tools to answer questions.
+
 {tools}
 
 Rules:
-- Never answer from memory. For every question that is not a greeting, a calculation or a date,
-  call search_docs first, then answer only from what it returns.
-- Never do arithmetic in your head: use the calculator tool.
-- For a question about a deadline, an exam, an event or a date, call get_deadline.
-- After each fact from the documents, cite its source exactly as labelled, like [course_credit.txt#3].
-- If the tools cannot answer the question, reply {"answer": "{i_dont_know}"}
+- Use a tool when it helps; otherwise answer directly.
 
-Reply with ONE JSON object and nothing else.
-To use a tool: {"tool": "<tool name>", "args": {...}}
-To answer:     {"answer": "<your answer, with [source] citations>"}
-
-Examples:
-Question: What is a credit hour?
-Reply: {"tool": "search_docs", "args": {"query": "credit hour"}}
-Question: Who founded the student union?
-Reply: {"tool": "search_docs", "args": {"query": "student union founder"}}
-Question: What is 12 * 7?
-Reply: {"tool": "calculator", "args": {"expression": "12 * 7"}}
-Question: When does registration open?
-Reply: {"tool": "get_deadline", "args": {"name": "registration opens"}}
-Question: Hello!
-Reply: {"answer": "Hello! How can I help you?"}"""
+Reply with ONE JSON object and nothing else:
+- tool call: {"tool": "<tool name>", "args": {...}}
+- answer:    {"answer": "<your answer>"}
+"""
 
 
 def system_prompt():
-    # .replace() instead of .format(): the JSON examples above are full of { } brackets
+    # .replace() is safer than .format(): the prompt is full of { } brackets
     return SYSTEM_PROMPT.replace("{tools}", tools.describe_tools()).replace("{i_dont_know}", answer.I_DONT_KNOW)
 
 
 def parse_reply(text):
-    """Read the LLM's reply as one JSON object. Raises ValueError if it is not one.
-    Models sometimes wrap the JSON in ```json fences or add words around it,
-    so we take the part from the first '{' to the last '}'."""
+    """Read one JSON object from the model's reply."""
     start, end = text.find("{"), text.rfind("}")
     if start == -1 or end < start:
         raise ValueError("your reply has no JSON object")
-    try:
-        data = json.loads(text[start:end + 1])
-    except json.JSONDecodeError as e:
-        raise ValueError(f"your JSON is broken ({e.msg})") from None
-    if not isinstance(data, dict) or ("answer" not in data and "tool" not in data):
-        raise ValueError('your JSON needs an "answer" key or a "tool" key')
+    data = json.loads(text[start:end + 1])
+    if not isinstance(data, dict):
+        raise ValueError("your JSON must be an object")
+    # TODO 4: also require an "answer" or a "tool" key.
     return data
 
 
 def log_event(event, **details):
-    """Record what the agent does: print a short line (if VERBOSE) and keep a log file."""
+    """Print a short line and keep a log file."""
     if config.VERBOSE:
         print(f"  [{event}] " + " | ".join(f"{key}={str(value)[:150]}" for key, value in details.items()))
-    # TODO (Session 4): also append {"time": ..., "event": event, **details} as ONE JSON line to config.LOG_FILE
+    config.LOG_FILE.parent.mkdir(exist_ok=True)
+    record = {"time": datetime.now().isoformat(timespec="seconds"), "event": event, **details}
+    # TODO 5: append json.dumps(record) as one line to config.LOG_FILE.
 
 
 def run_agent(question, history=None):
-    """Answer one question with the tools.
-    `history` = earlier messages of this conversation (pass result["history"] to ask a follow-up).
-    Returns a dict: answer, sources, steps, tools_used, stopped (why the loop ended), seconds, history."""
+    """Answer one question with the tools. Pass result["history"] to ask a follow-up."""
     started = time.monotonic()
     messages = [{"role": "system", "content": system_prompt()}]
-    messages += (history or [])[-2 * config.MAX_HISTORY_TURNS:]  # keep only the last few turns (context size)
+    messages += (history or [])[-2 * config.MAX_HISTORY_TURNS:]  # keep the last few turns
     messages.append({"role": "user", "content": question})
-    log_event("question", question=question, provider=config.LLM_PROVIDER)
 
-    result = {"question": question, "answer": None, "sources": [], "steps": 0, "tools_used": [], "stopped": None}
+    result = {"question": question, "answer": None, "sources": [], "steps": 0,
+              "tools_used": [], "stopped": None, "seconds": 0, "history": []}
+
     for step in range(1, config.MAX_STEPS + 1):
-        # TODO (Session 4): stop (result["stopped"] = "timeout") when more than config.AGENT_TIMEOUT_SECONDS have passed
         result["steps"] = step
+        # TODO 6: stop with result["stopped"] = "timeout" when the task took too long.
         try:
             reply = llm.chat_with_retries(messages, log=lambda message: log_event("retry", message=message))
-        except Exception as e:  # the LLM is unreachable even after retries
-            log_event("llm_error", step=step, error=f"{type(e).__name__}: {e}")
+        except Exception as error:  # the LLM is unreachable even after retries
+            log_event("llm_error", step=step, error=str(error))
             result["stopped"] = "llm_error"
             break
         messages.append({"role": "assistant", "content": reply})
-        # TODO (Session 3): parse the reply; if it has "answer", finish; otherwise validate the tool call, run it, and send the result back
-        raise NotImplementedError('TODO (Session 3): parse the reply; if it has "answer", finish; otherwise validate the tool call, run it, and send the result back')
+
+        try:
+            action = parse_reply(reply)
+        except ValueError as error:  # bad JSON: tell the model and let it try again
+            messages.append({"role": "user", "content": f"Error: {error}. Reply with one JSON object."})
+            continue
+
+        if "answer" in action:
+            result["answer"] = str(action["answer"])
+            result["stopped"] = "answer"
+            break
+
+        error = tools.validate_call(action)
+        if error:  # wrong tool call: send the error back so the model can fix it
+            messages.append({"role": "user", "content": f"Error: {error}"})
+            continue
+
+        # TODO 7: run the tool, record its name, and send the output back.
+        raise NotImplementedError("TODO 7: run the tool, record its name, and send the output back")
 
     if result["stopped"] is None:  # the loop used all its steps without an answer
         result["stopped"] = "max_steps"
     if result["answer"] is None:
         result["answer"] = f"Sorry, I could not finish this question (stopped: {result['stopped']})."
-    known_ids = {chunk["id"] for chunk in rag.get_store()["chunks"]}
+    known_ids = {chunk["id"] for chunk in rag.get_store()["chunks"]}  # only real chunk ids
     result["sources"] = answer.cited_sources(result["answer"], known_ids)
     result["seconds"] = round(time.monotonic() - started, 1)
-    # Remember only the question and the final answer for follow-up questions (Session 4: state).
-    # The answer is stored as JSON, the same format we ask the LLM to reply in.
+    # remember this turn so the next question can refer back
     result["history"] = (history or []) + [
         {"role": "user", "content": question},
         {"role": "assistant", "content": json.dumps({"answer": result["answer"]}, ensure_ascii=False)},
     ]
-    log_event("finish", stopped=result["stopped"], steps=result["steps"], tools=result["tools_used"],
-              seconds=result["seconds"], answer=result["answer"])
+    log_event("finish", stopped=result["stopped"], steps=result["steps"],
+              tools=result["tools_used"], seconds=result["seconds"], answer=result["answer"])
     return result

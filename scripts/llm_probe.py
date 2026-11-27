@@ -82,7 +82,8 @@ def make_client(name):
     if not key:
         raise RuntimeError(f"no {p['key_name']} in .env or environment")
     # max_retries=0: we want to SEE rate-limit errors, not have the SDK hide them.
-    client = OpenAI(base_url=p["base_url"], api_key=key, max_retries=0, timeout=120)
+    client = OpenAI(base_url=p["base_url"], api_key=key, max_retries=0, timeout=120,
+                    default_headers=p.get("headers"))
     return client, p["model"], p.get("options", {})
 
 
