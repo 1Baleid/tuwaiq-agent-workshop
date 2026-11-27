@@ -1,5 +1,5 @@
 """
-tools.py - Session 3: the tool registry.
+tools.py - Session 1: the tool registry.
 
 A tool is a normal Python function that the agent may ask us to run. The LLM cannot run
 code; it can only write a request such as
@@ -11,7 +11,7 @@ The registry (TOOLS) lists every tool with a description and its arguments, so w
   2. check each request before running it -> validate_call()
   3. run it                           -> run_tool()
 
-Tools here: search_docs (Sessions 1-2 as a tool), calculator and get_deadline.
+Tools here: search_docs (Session 3 as a tool), calculator and get_deadline.
 """
 import ast
 import csv
@@ -25,7 +25,7 @@ import rag
 
 # ---------------------------------------------------------------- tool 1: document search
 def search_docs(query):
-    """Search the documents (the index from Session 1) and return the best chunks, labelled."""
+    """Search the documents (the index from Session 3) and return the best chunks, labelled."""
     hits = [hit for hit in rag.search(rag.get_store(), query) if hit["score"] >= config.MIN_SCORE]
     if not hits:
         return "No matching documents."
@@ -129,7 +129,7 @@ def describe_tools():
 def validate_call(call):
     """Check a tool call from the LLM before we run it.
     Returns None when it is fine, or an error message the LLM can read and fix."""
-    # TODO (Session 3): check the tool name, that args is a dict, and that the arguments match TOOLS
+    # TODO (Session 1): check the tool name, that args is a dict, and that the arguments match TOOLS
     return None  # no checks yet: every call is accepted
 
 

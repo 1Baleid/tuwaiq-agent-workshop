@@ -7,11 +7,11 @@ eval_runner.py - Session 5: run the evaluation set and see what fails.
 
 Each question in eval/questions.json looks like:
     {"id": "q1",
-     "question": "How long is one pomodoro?",
-     "expected_answer": "25 minutes",
-     "source": "pomodoro_technique.txt",    # file that holds the answer; "tool:<name>" if a tool
+     "question": "What is the minimum course load in a regular semester?",
+     "expected_answer": "13 credit hours",
+     "source": "01-04_The_Academic_Levels_System.pdf",  # file that holds the answer; "tool:<name>" if a tool
                                             # gives it; null if the right answer is "I don't know"
-     "keywords": ["25"]}                    # words the answer must contain; "a|b" means a OR b
+     "keywords": ["13"]}                    # words the answer must contain; "a|b" means a OR b
 
 Keywords let us mark answers automatically, without paying for another LLM call.
 Run from a terminal:  python eval_runner.py

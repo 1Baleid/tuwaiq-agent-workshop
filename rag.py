@@ -1,5 +1,5 @@
 """
-rag.py - Session 1: from documents to a searchable index. Fill in the short TODOs.
+rag.py - Session 3: from documents to a searchable index. Fill in the short TODOs.
 
     documents  ->  chunks  ->  embeddings  ->  index  ->  search_docs()
 
@@ -11,7 +11,7 @@ rag.py - Session 1: from documents to a searchable index. Fill in the short TODO
   Fix    chunk_by_section()  one chunk per section, labelled with its heading (TODO 8)
 
 search_docs() must return a list of {"text", "source", "chunk", "score", "id"}, best first.
-Session 2 (answer.py) and the harness (tools.py) use it.
+answer.py and the harness (tools.py) use it.
 
     import rag
     index = rag.build_index(rag.make_chunks(rag.load_documents()))
@@ -52,7 +52,7 @@ def read_file(path):
 
 def load_documents(folder=None):
     """Read every document in the folder (default: <corpus>/docs).
-    Each document becomes {"source": "course_credit.txt", "text": "A course credit is ..."}."""
+    Each document becomes {"source": "01-05_Attendance_And_Withdrawal.pdf", "text": "Article Nine: a student must attend ..."}."""
     folder = Path(folder or config.CORPUS_DIR / "docs")
     docs, skipped = [], []
     for path in sorted(glob.glob(str(folder / "*"))):
@@ -94,7 +94,7 @@ def chunk_text(text, chunk_size=None, overlap=None):
 
 def make_chunks(documents):
     """Chunk every document. Each chunk remembers where it came from:
-    {"id": "course_credit.txt#0", "source": "course_credit.txt", "chunk": 0, "text": "..."}"""
+    {"id": "01-05_Attendance_And_Withdrawal.pdf#0", "source": "01-05_Attendance_And_Withdrawal.pdf", "chunk": 0, "text": "..."}"""
     chunks = []
     for doc in documents:
         pieces = chunk_by_section(doc) if config.CHUNK_BY_SECTION else chunk_text(doc["text"])
@@ -237,9 +237,9 @@ def split_sections(text):
 
 
 def chunk_by_section(doc):
-    """One chunk per section, each starting with its address, e.g. "Course credit > Australia: ...".
+    """One chunk per section, each starting with its address, e.g. "01-05 attendance and withdrawal > Article nine: ...".
     A section longer than CHUNK_SIZE words is cut with chunk_text(), and every piece keeps the label."""
-    title = Path(doc["source"]).stem.replace("_", " ").capitalize()  # "course_credit.txt" -> "Course credit"
+    title = Path(doc["source"]).stem.replace("_", " ").capitalize()  # "01-05_Attendance_And_Withdrawal.pdf" -> "01-05 attendance and withdrawal"
     chunks = []
     for heading, body in split_sections(doc["text"]):
         label = f"{title} > {heading}" if heading else title

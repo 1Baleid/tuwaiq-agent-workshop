@@ -43,7 +43,7 @@ def get_client():
     key = get_api_key(provider["key_name"])  # read every time, so a replaced key is used at once
     if name not in _clients or _clients[name].api_key != key:
         # max_retries=0: the library would quietly retry failed calls. We retry ourselves
-        # (Session 4) so that you can see every failure and every retry.
+        # (Session 2) so that you can see every failure and every retry.
         _clients[name] = OpenAI(base_url=provider["base_url"], api_key=key, max_retries=0)
     return _clients[name]
 
@@ -67,8 +67,8 @@ RETRY_ERRORS = (RateLimitError, APITimeoutError, APIConnectionError, InternalSer
 
 def chat_with_retries(messages, log=print):
     """Like chat(), but when the call fails for a temporary reason, wait and try again
-    (up to LLM_MAX_RETRIES times). Session 4."""
-    # TODO (Session 4): call chat(); on a RETRY_ERRORS error wait (retry_wait) and try again, up to config.LLM_MAX_RETRIES times
+    (up to LLM_MAX_RETRIES times). Session 2."""
+    # TODO (Session 2): call chat(); on a RETRY_ERRORS error wait (retry_wait) and try again, up to config.LLM_MAX_RETRIES times
     return chat(messages)  # no retries yet
 
 

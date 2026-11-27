@@ -27,13 +27,13 @@ python scripts/smoke_test.py
 | File | Session | What it does |
 |---|---|---|
 | `config.py` | all | **Every setting**, including the one LLM switch `LLM_PROVIDER` |
-| `rag.py` | 1 | `load_documents()` → `chunk_text()` → `embed()` → `build_index()` (ChromaDB) → `search_docs()` |
-| `answer.py` | 2 | `format_passages()` → `build_prompt()` → `extract_citations()` → `answer()`: cited answers like `[1]`, or "I don't know" |
-| `tools.py` | 3 | the tool registry: `search_docs`, `calculator`, `get_deadline`, plus `validate_call()` |
-| `agent.py` | 3–4 | the agent loop: tool calls as plain JSON, validation, step limit, timeout, retries, log file |
-| `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S4) |
+| `tools.py` | 1 | the tool registry: `search_docs`, `calculator`, `get_deadline`, plus `validate_call()` |
+| `agent.py` | 1–2 | the agent loop: tool calls as plain JSON, validation, step limit, timeout, retries, log file |
+| `rag.py` | 3 | `load_documents()` → `chunk_text()` → `embed()` → `build_index()` (ChromaDB) → `search_docs()` |
+| `answer.py` | 3 | `format_passages()` → `build_prompt()` → `extract_citations()` → `answer()`: cited answers like `[1]`, or "I don't know" |
+| `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S2) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
-| `data/sample/` | | placeholder corpus: `docs/`, `sources.csv`, `deadlines.csv` (see its README) |
+| `data/sample/` | | KFUPM corpus (34 public registrar and bulletin pages as PDF): `docs/`, `sources.csv`, `deadlines.csv` (see its README) |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
 | `scripts/` | | instructor tools (table below) |
 | `docs/` | | decisions, pre-work, known errors, handovers |
@@ -71,7 +71,7 @@ model, and students see the parsing and validation happen. The test is in `docs/
 * **Only ever edit `solutions`.** Code that students write in a session is wrapped in markers:
 
   ```python
-  # SOLUTION START: TODO (Session 1): cut `text` into chunks of `size` characters
+  # SOLUTION START: TODO (Session 3): cut `text` into chunks of `size` characters
   ...working code...
   # SOLUTION END
   ```
@@ -119,4 +119,4 @@ if it will not install, `rag.py` falls back to plain numpy search with the same 
 
 `docs/llm_options.md` (T1) · `docs/llm_decision.md` (T2) · `docs/prework.md` · `docs/known_errors.md` · `docs/handover/`
 
-Sample documents: Wikipedia, CC BY-SA 4.0 (see `data/sample/sources.csv`).
+Documents: public pages of King Fahd University of Petroleum & Minerals (KFUPM), saved as PDF; source URL per file in `data/sample/sources.csv`.

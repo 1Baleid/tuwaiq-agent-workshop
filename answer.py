@@ -1,5 +1,5 @@
 """
-answer.py - Session 2: RAG answers you can trust. Fill in the short TODOs.
+answer.py - Session 3: RAG answers you can trust. Fill in the short TODOs.
 
     question -> search_docs() -> numbered passages -> prompt -> LLM -> answer with [citations]
                                                                        or "I don't know"
@@ -34,8 +34,8 @@ def llm(prompt):
 # ---------------------------------------------------------------- Lab 1: label the passages
 def format_passages(passages):
     """Number the passages for the prompt:
-    [1] (source: course_credit.txt, chunk 0)
-    A course credit is ..."""
+    [1] (source: 01-05_Attendance_And_Withdrawal.pdf, chunk 0)
+    Article Nine: a student must attend ..."""
     blocks = []
     for n, passage in enumerate(passages, start=1):
         # TODO 1: add one f-string to blocks: "[n] (source: <source>, chunk <chunk>)", a new line, then the text.
@@ -78,7 +78,7 @@ def answer_naive(question, k=3):
 # ---------------------------------------------------------------- Lab 3: citations
 def extract_citations(answer_text, passages):
     """Find every [n] in the answer and map it to its passage.
-    [1] -> {"n": 1, "source": "course_credit.txt", "chunk": 0}. A number with no passage is flagged."""
+    [1] -> {"n": 1, "source": "01-05_Attendance_And_Withdrawal.pdf", "chunk": 0}. A number with no passage is flagged."""
     citations = []
     numbers = dict.fromkeys(int(n) for n in re.findall(r"\[(\d+)\]", answer_text))  # in order, no repeats
     for n in numbers:
@@ -152,10 +152,10 @@ def diagnose(tests=None, k=None):
 
 
 # ---------------------------------------------------------------- for the harness (tools.py, agent.py)
-# The agent cites chunk ids like [course_credit.txt#3] instead of passage numbers: an id stays
+# The agent cites chunk ids like [01-05_Attendance_And_Withdrawal.pdf#3] instead of passage numbers: an id stays
 # the same across several searches, a number [2] does not.
 def format_sources(hits):
-    """Label each chunk with its id for the agent: '[course_credit.txt#3]\n<text>' ..."""
+    """Label each chunk with its id for the agent: '[01-05_Attendance_And_Withdrawal.pdf#3]\n<text>' ..."""
     return "\n\n".join(f"[{hit['id']}]\n{hit['text']}" for hit in hits)
 
 

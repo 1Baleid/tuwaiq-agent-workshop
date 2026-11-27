@@ -1,5 +1,5 @@
 """
-agent.py - Sessions 3-4: the harness loop. Fill in the short TODOs.
+agent.py - Sessions 1-2: the harness loop. Fill in the short TODOs.
 
 A model can only reply with text. This loop turns that text into work:
   1. send the question and the tools to the LLM
@@ -22,7 +22,7 @@ import tools
 
 # TODO 1-3: add these rules to the prompt below.
 # 1. Call search_docs before answering a document question.
-# 2. Cite sources like [course_credit.txt#3].
+# 2. Cite sources like [01-05_Attendance_And_Withdrawal.pdf#3].
 # 3. Answer "{i_dont_know}" when the tools cannot help.
 SYSTEM_PROMPT = """You are a helpful assistant. Use the tools to answer questions.
 
