@@ -5,7 +5,7 @@ You ask it for something in plain English; it reads the code, edits it, runs the
 tells you what it did. The model never touches the filesystem itself: it replies with one JSON
 object, and this file validates the request, runs it inside the repo, and sends the result back.
 
-    python harness.py "Write read_file and load_documents in rag.py, then run run_check('rag')"
+    python harness.py "Write read_file and load_documents in rag.py, then run run_check('load')"
     python harness.py --print-prompt        # see exactly what the model is told
 
     import harness
@@ -21,7 +21,7 @@ Why this harness is optimized for building RAG:
 - the prompt states the RAG target (load -> chunk -> embed -> index -> retrieve ->
   answer with citations -> "I don't know") so the model keeps the goal in view
 - the tools are the ones a coding agent needs: list, read, write, edit, run a check
-- file reads and command output are cap ped, so the context stays small
+- file reads and command output are capped, so the context stays small
 - every tool error comes back as data the model can fix on the next step
 - the loop stops on an answer, a step limit, a timeout, or an LLM error
 """
