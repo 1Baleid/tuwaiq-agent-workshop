@@ -1,4 +1,4 @@
-# KFUPM corpus: structured copy (default)
+# KFUPM corpus: structured copy
 
 The 34 KFUPM documents from `data/sample/` rewritten as Markdown, built for section chunking:
 

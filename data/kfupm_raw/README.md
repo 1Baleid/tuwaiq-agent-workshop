@@ -1,4 +1,6 @@
-# KFUPM corpus: raw copy
+# KFUPM corpus: raw copy (default)
+
+The default `CORPUS_DIR` in `config.py`, because the slides work on this copy.
 
 The same information as `data/kfupm_structured/`, dumped as plain text: no headings, no lists and no
 paragraphs, just the words of each document in order. Use it to see what chunking does when a

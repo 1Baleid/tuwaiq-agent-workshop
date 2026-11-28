@@ -44,7 +44,7 @@ python scripts/smoke_test.py
 | `agent.py` | 1–2 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
 | `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S2) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
-| `data/` | | the KFUPM documents in three copies: `kfupm_structured/` (Markdown, default), `kfupm_raw/` (plain dump), `sample/` (original PDFs) |
+| `data/` | | the KFUPM documents in three copies: `kfupm_raw/` (plain dump, default, used in the slides), `kfupm_structured/` (Markdown, one section per rule), `sample/` (original PDFs) |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
 | `scripts/` | | instructor tools (table below) |
 | `docs/` | | decisions, pre-work, known errors, handovers |
