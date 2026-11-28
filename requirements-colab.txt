@@ -1,5 +1,5 @@
 # Colab install:   %pip install -q -r requirements-colab.txt
 # Colab already has openai, sentence-transformers, torch, numpy and pandas, so we only add
-# what is missing. We do not re-pin Colab's own packages: that would force a long reinstall.
-faiss-cpu==1.15.1
+# what is missing (chromadb for the vector database, pypdf). We do not re-pin Colab's own packages: that would force a long reinstall.
+chromadb==1.5.9
 pypdf==6.21.4

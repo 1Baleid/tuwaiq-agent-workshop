@@ -38,7 +38,7 @@ providers' official docs and the T1 research.
 
 | Symptom | Cause | Fix | Time limit |
 |---|---|---|---|
-| `RateLimitError` / `429` from Groq, or the agent log shows `[retry] … RateLimitError` | Groq free tier: 8,000 tokens per minute per student. A fast run of questions goes over it | Nothing: the agent waits and retries by itself (Session 4). If it keeps happening, wait a minute between questions | 2 min, then switch provider |
+| `RateLimitError` / `429` from Groq, or the agent log shows `[retry] … RateLimitError` | Groq free tier: 8,000 tokens per minute per student. A fast run of questions goes over it | Nothing: the agent waits and retries by itself (Session 2). If it keeps happening, wait a minute between questions | 2 min, then switch provider |
 | Gemini `429` that does not go away after a minute | Daily quota used up. It resets at midnight Pacific time, which is 11:00 in Riyadh | Switch provider (`config.LLM_PROVIDER = "groq"` or `"local"`). Failed calls count against the quota too | at once |
 | `503` / "overloaded" from Gemini | Google's servers are busy | Retry after a minute or switch provider | 2 min |
 | Every student gets 429s at the same moment | Students are sharing one key | Every student must use their own key (see `docs/llm_decision.md`) | at once |
@@ -69,19 +69,19 @@ providers' official docs and the T1 research.
 | Local model forgets the instructions or the tool list in long conversations | Ollama's default context is 4,096 tokens and it cuts longer prompts **silently** | Start the server with `OLLAMA_CONTEXT_LENGTH=8192`. `scripts/local_model.py` does this, but only when it starts the server itself, so restart Ollama (on a laptop) or the Colab session | 5 min |
 | The first local answer after a pause is slow | Ollama unloads the model after 5 idle minutes | `scripts/local_model.py` starts the server with `OLLAMA_KEEP_ALIVE=-1` (keep loaded) | n/a |
 
-## 6. The agent and its tools (Sessions 3–4)
+## 6. The agent and its tools (Sessions 1–2)
 
 | Symptom (in the agent's log) | Cause | Fix | Time limit |
 |---|---|---|---|
 | `[bad_json] … your reply has no JSON object` **(seen)** | The model answered in plain text, e.g. just "I don't know based on the documents." | Normally nothing: the harness tells the model and it fixes it next step. If it repeats, check the examples in `SYSTEM_PROMPT` are still there, or use a stronger model | 10 min |
-| `[bad_tool_call] Unknown tool '…'` or `… is missing: …` | The model invented a tool or forgot an argument | Normally nothing: `validate_call` sends the error back and the model retries. On `main` this is the Session 3 exercise | 10 min |
+| `[bad_tool_call] Unknown tool '…'` or `… is missing: …` | The model invented a tool or forgot an argument | Normally nothing: `validate_call` sends the error back and the model retries. On `main` this is the Session 1 exercise | 10 min |
 | Answer `Sorry, I could not finish … (stopped: max_steps)` | The agent kept calling tools, e.g. the same tool again and again | Read the log: what did the tool answer? Usually a tool error the model cannot fix. Raise `MAX_STEPS` only if the question really needs more steps | 10 min |
 | `(stopped: timeout)` | A slow provider, or long waits after 429s | Raise `AGENT_TIMEOUT_SECONDS`, or switch provider | 5 min |
 | `(stopped: llm_error)` | The LLM could not be reached even after retries: network, key or provider down | Check the error in the log; switch provider | 5 min |
-| The answer is right but cites nothing, or the model answered without searching **(seen with the small local model)** | Small models sometimes answer from memory | Expected sometimes. A good discussion point for S3 ("raw model vs harness"). A stronger model (Groq) does it less | n/a |
+| The answer is right but cites nothing, or the model answered without searching **(seen with the small local model)** | Small models sometimes answer from memory | Expected sometimes. A good discussion point for S1 ("raw model vs harness"). A stronger model (Groq) does it less | n/a |
 | `"I don't know"` for a question that **is** in the documents | The file was not loaded (look for `Skipped … file(s)` when the index is built), `MIN_SCORE` is too high, or the chunks are too small or too big | Check the loader's output and `rag.search(rag.get_store(), "your question")` scores. Lower `MIN_SCORE` a little. Rebuild | 10 min |
 | Calculator error `'(2, 400 * 1.15)' is not allowed …` | The model wrote a number with a thousands comma, `2,400` | Normally the model retries without the comma. Otherwise rephrase without commas | 5 min |
-| `Warning: chunk/model/corpus settings changed since build_store(). Run build_store() again.` | A store built before `CHUNK_SIZE` (etc.) was changed | Build it again: `store = rag.build_store()` (`rag.get_store()` rebuilds by itself) | 2 min |
+| `Warning: chunk/model/corpus settings changed since build_index(). Build the index again.` | An index built before `CHUNK_SIZE` (etc.) was changed | Build it again: `index = rag.build_store()` (`rag.get_index()` rebuilds by itself) | 2 min |
 
 ## 7. Data and documents
 

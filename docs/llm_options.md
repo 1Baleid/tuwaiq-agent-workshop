@@ -74,9 +74,9 @@ The agent needs one tool-call format that works with **every** provider, includi
 
 **Decision for T3: plain JSON in the reply, with examples in the system prompt.**
 - **It works on any chat model and any endpoint.** It doesn't depend on each provider's tool-calling implementation: Groq returns HTTP 400 on malformed tool calls, Ollama ignores `tool_choice`, and Gemini's layer is beta.
-- **Students see every step:** raw reply → parse JSON → validate → run the tool. That is exactly what Session 3 teaches.
-- **The failures are good teaching material.** Bad JSON, an invented tool name or a missing argument are what the validator (S3) and retries (S4) handle.
-- **The prompt effect is a ready-made S3 demo:** 6/10 → 10/10 just from three examples.
+- **Students see every step:** raw reply → parse JSON → validate → run the tool. That is exactly what Session 1 teaches.
+- **The failures are good teaching material.** Bad JSON, an invented tool name or a missing argument are what the validator (S1) and retries (S2) handle.
+- **The prompt effect is a ready-made S1 demo:** 6/10 → 10/10 just from three examples.
 
 ## Other providers
 

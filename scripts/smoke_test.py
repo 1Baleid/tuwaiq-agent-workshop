@@ -40,8 +40,8 @@ def check_packages():
         try:
             installed = importlib.metadata.version(package)
         except importlib.metadata.PackageNotFoundError:
-            if package == "faiss-cpu":  # rag.py falls back to numpy without it
-                notes.append("faiss-cpu missing (numpy search will be used)")
+            if package == "chromadb":  # rag.py falls back to numpy without it
+                notes.append("chromadb missing (numpy search will be used)")
                 continue
             raise RuntimeError(f"{package} is not installed. Run: pip install -r requirements.txt") from None
         if installed.split("+")[0] != expected:
@@ -75,7 +75,7 @@ def check_corpus_and_chunks():
     documents = rag.load_documents()
     if not documents:
         raise RuntimeError(f"no .txt/.md/.pdf files in {config.CORPUS_DIR / 'docs'}")
-    chunks = rag.make_chunks(documents)  # TODO on main until Session 1
+    chunks = rag.make_chunks(documents)  # TODO on main until Session 3
     return f"{len(documents)} documents -> {len(chunks)} chunks"
 
 
@@ -113,7 +113,7 @@ def check_tools():
     assert "days" in tools.get_deadline(first_deadline), "get_deadline did not find a known deadline"
     assert tools.validate_call({"tool": "calculator", "args": {"expression": "1+1"}}) is None
     if tools.validate_call({"tool": "no_such_tool", "args": {}}) is None:
-        raise NotImplementedError("validate_call accepts unknown tools (TODO (Session 3))")
+        raise NotImplementedError("validate_call accepts unknown tools (TODO (Session 1))")
     return "calculator, get_deadline and validate_call work"
 
 
@@ -131,9 +131,9 @@ def check_agent():
 
 QUICK = [("Python version", check_python), ("Packages", check_packages),
          ("Embedding model (downloads ~90 MB once)", check_embeddings), ("LLM key and one call", check_llm)]
-FULL = QUICK + [("Session 1: documents and chunks", check_corpus_and_chunks), ("Session 1: search", check_search),
-                ("Session 2: answer with citations", check_rag_answer), ("Session 3: tools", check_tools),
-                ("Sessions 3-4: agent loop", check_agent)]
+FULL = QUICK + [("Session 3: documents and chunks", check_corpus_and_chunks), ("Session 3: search", check_search),
+                ("Session 3: answer with citations", check_rag_answer), ("Session 1: tools", check_tools),
+                ("Sessions 1-2: agent loop", check_agent)]
 
 
 def main(argv=None):

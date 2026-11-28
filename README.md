@@ -44,7 +44,7 @@ python scripts/smoke_test.py
 | `agent.py` | 3–4 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
 | `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S4) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
-| `data/sample/` | | placeholder corpus: `docs/`, `sources.csv`, `deadlines.csv` (see its README) |
+| `data/sample/` | | KFUPM corpus (34 public registrar and bulletin pages as PDF): `docs/`, `sources.csv`, `deadlines.csv` (see its README) |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
 | `scripts/` | | instructor tools (table below) |
 | `docs/` | | decisions, pre-work, known errors, handovers |
@@ -97,9 +97,10 @@ All in `config.py`, as plain variables. Functions read them **when they run**, s
 
 | Setting | Default | Try |
 |---|---|---|
-| `CHUNK_SIZE` / `CHUNK_OVERLAP` | 500 / 100 characters | 50 or 3000: search results get worse |
-| `TOP_K` | 4 chunks per search | 1: answers miss facts |
-| `MIN_SCORE` | 0.40 | 0.0: off-topic questions now come with "sources", so only the LLM stands between you and a made-up answer |
+| `CHUNK_SIZE` / `CHUNK_OVERLAP` | 120 / 20 words | 15 or 1000: search results get worse |
+| `CHUNK_BY_SECTION` | `False` | `True`: one chunk per section, labelled with its heading (the fix) |
+| `TOP_K` | 3 chunks per search | 1: answers miss facts |
+| `MIN_SCORE` | 0.55 | 0.0: off-topic questions now come with "sources", so only the LLM stands between you and a made-up answer |
 | `MAX_STEPS` | 5 LLM calls per question | 1: tool questions stop before answering |
 | `AGENT_TIMEOUT_SECONDS` / `LLM_TIMEOUT_SECONDS` | 120 / 60 | 1: watch timeouts and retries |
 | `LLM_PROVIDER` | `"openrouter"` | `"local"`: the fallback model (see below) |
@@ -145,7 +146,7 @@ model, and students see the parsing and validation happen. The test is in `docs/
 * **Only ever edit `solutions`.** Code that students write in a session is wrapped in markers:
 
   ```python
-  # SOLUTION START: TODO (Session 1): cut `text` into chunks of `size` characters
+  # SOLUTION START: TODO (Session 3): cut `text` into chunks of `size` characters
   ...working code...
   # SOLUTION END
   ```
@@ -196,4 +197,4 @@ FAISS was chosen over ChromaDB: on Colab it installs one package with no conflic
 
 `docs/llm_options.md` (T1) · `docs/llm_decision.md` (T2) · `docs/prework.md` · `docs/known_errors.md` · `docs/handover/`
 
-Sample documents: Wikipedia, CC BY-SA 4.0 (see `data/sample/sources.csv`).
+Documents: public pages of King Fahd University of Petroleum & Minerals (KFUPM), saved as PDF; source URL per file in `data/sample/sources.csv`.

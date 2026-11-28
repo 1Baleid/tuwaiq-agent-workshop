@@ -50,14 +50,14 @@ PROVIDERS = {
 }
 
 LLM_TIMEOUT_SECONDS = 60     # give up on ONE LLM call after this many seconds
-LLM_MAX_RETRIES = 3          # Session 4: how many times to retry a failed call (429, timeout, ...)
+LLM_MAX_RETRIES = 3          # Session 2: how many times to retry a failed call (429, timeout, ...)
 MAX_OUTPUT_TOKENS = 800      # longest reply we accept (models that "think" first need room)
 # Note for students: choose the limit for the agent you are building:
 #   - Q&A agent (agent.py): 800. Replies are short tool calls and answers.
 #   - coding agent (harness_solution.py): 8000 (its MAX_REPLY_TOKENS). Replies carry code.
 
 # ------------------------------------------------------------
-# 2. Documents and search  (Sessions 1-2)
+# 2. Documents and search  (Session 3)
 # ------------------------------------------------------------
 # To swap the documents, point this at another folder with the same layout:
 #   docs/ (the .txt, .md and .pdf files), sources.csv, deadlines.csv
@@ -69,19 +69,20 @@ CORPUS_DIR = ROOT / os.environ.get("CORPUS_DIR", "data/sample")
 # For Arabic documents use "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" (470 MB).
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
-CHUNK_SIZE = 500             # characters per chunk
-CHUNK_OVERLAP = 100          # characters shared by two neighbouring chunks
-TOP_K = 4                    # how many chunks one search returns
-MIN_SCORE = 0.40             # Session 2: if no chunk scores this high, answer "I don't know"
+CHUNK_SIZE = 120             # words per chunk (about one paragraph)
+CHUNK_OVERLAP = 20           # words shared by two neighbouring chunks
+CHUNK_BY_SECTION = False     # Session 3 fix: True = one chunk per section, labelled with its heading
+TOP_K = 3                    # how many chunks one search returns
+MIN_SCORE = 0.55             # Session 3: if no chunk scores this high, answer "I don't know"
 
 # ------------------------------------------------------------
-# 3. The agent  (Sessions 3-4)
+# 3. The agent  (Sessions 1-2)
 # ------------------------------------------------------------
 MAX_STEPS = 5                # most LLM calls the agent may make for ONE question
 AGENT_TIMEOUT_SECONDS = 120  # most time the agent may spend on ONE question
 MAX_HISTORY_TURNS = 3        # earlier questions + answers the agent remembers in a conversation
 VERBOSE = True               # print every step the agent takes
-LOG_FILE = ROOT / "logs" / "agent_log.jsonl"   # Session 4: one line per agent event
+LOG_FILE = ROOT / "logs" / "agent_log.jsonl"   # Session 2: one line per agent event
 
 # ------------------------------------------------------------
 # 4. Evaluation  (Session 5)
