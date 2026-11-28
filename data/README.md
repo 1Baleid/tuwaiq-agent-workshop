@@ -7,10 +7,10 @@ transcripts) and registrar notices. The same 34 documents come in three folders;
 
 | Folder | Files | What it is |
 |---|---|---|
-| `kfupm_raw/` | 34 `.txt` | **The default, used in the slides.** The text as one plain dump: no headings, lists or paragraphs. |
+| `kfupm_raw/` | 33 `.txt` + 1 `.html` | **The default, used in the slides.** The text as one plain dump: no headings, lists or paragraphs. |
 | `kfupm_structured/` | 34 `.md` | The same text as Markdown: one `## heading` section per complete rule. Use it with `CHUNK_BY_SECTION = True`. |
 | `kfupm_pdf/` | 34 `.pdf` | The original pages, saved as PDF. |
-| `deadlines.csv` | | The table behind the `get_deadline` tool (`name,date,note`, dates as `YYYY-MM-DD`). **The dates are invented** for testing. |
+| `deadlines.csv` | | The table behind the `get_deadline` tool (`name,date,note`, dates as `YYYY-MM-DD`). The add/drop, withdrawal, exam and registration dates come from the real calendar (`07_Academic_Calendar_Current_Semester`); the club fair and the scholarship are invented. One date is typed `03/12/2026` on purpose (Session 5, Fix 3). |
 
 Switch folders in `config.py`, or without editing it: `CORPUS_DIR=data/kfupm_structured`.
 
@@ -23,6 +23,8 @@ Switch folders in `config.py`, or without editing it: `CORPUS_DIR=data/kfupm_str
   together would put the same rule in the results twice.
 - `31_Replacement_Certificate.pdf` is a scan, so its PDF text is partly garbled. The `.txt` and `.md`
   copies were typed from the page images.
+- `kfupm_raw/32_Transcripts_From_Outside_Dhahran.html` is an `.html` page on purpose: `rag.read_file()`
+  does not read `.html` yet, so question q8 fails until Session 5, Fix 1 teaches the loader to read it.
 - Keep personal or private data out of these folders: free LLM tiers may log what you send them.
 
 ## Sources

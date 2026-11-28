@@ -67,9 +67,17 @@ RETRY_ERRORS = (RateLimitError, APITimeoutError, APIConnectionError, InternalSer
 
 def chat_with_retries(messages, log=print):
     """Like chat(), but when the call fails for a temporary reason, wait and try again
-    (up to LLM_MAX_RETRIES times). Session 2."""
-    # TODO (Session 2): call chat(); on a RETRY_ERRORS error wait (retry_wait) and try again, up to config.LLM_MAX_RETRIES times
-    return chat(messages)  # no retries yet
+    (up to LLM_MAX_RETRIES times). Given complete: the coding harness (harness.py) depends on it,
+    because 30 students on one key get 429 "rate limited" errors, and one must not end a run."""
+    for attempt in range(config.LLM_MAX_RETRIES + 1):
+        try:
+            return chat(messages)
+        except RETRY_ERRORS as error:
+            if attempt == config.LLM_MAX_RETRIES:
+                raise  # out of retries: let the caller see the error
+            wait = retry_wait(error, attempt)
+            log(f"{type(error).__name__}, try {attempt + 1} of {config.LLM_MAX_RETRIES}: waiting {wait:.0f}s")
+            time.sleep(wait)
 
 
 def retry_wait(error, attempt):
