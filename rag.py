@@ -101,6 +101,9 @@ def make_chunks(documents):
     #   CHUNK_SIZE        words per window. With CHUNK_BY_SECTION = True, a section longer than this is cut
     #                     into pieces. In data/kfupm_structured, 240 of 253 sections fit in 120 words and the
     #                     longest has 167, so CHUNK_SIZE = 170 keeps every rule whole in one chunk.
+    #                     Mind the limit: the embedding model reads only the first 256 tokens of a chunk, about
+    #                     130 words of this text. 170 is still safe here (the longest section is 227 tokens),
+    #                     but in a bigger window the words past the limit are never searched.
     #   CHUNK_OVERLAP     words two neighbouring windows share, so a sentence cut at a border survives.
     #   CORPUS_DIR        data/kfupm_structured (sections) or data/kfupm_raw (one plain dump of the same text).
     # Try: raw + word windows, structured + word windows, structured + sections; then CHUNK_SIZE 30 vs 300.
