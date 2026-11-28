@@ -1,0 +1,10 @@
+Class level rules are unified for the undergraduate level across all majors: Freshman (FR): 0 - 30
+credit hours Sophomore (SO): 31 - 62 credit hours Junior (JR): 63 - 96 credit hours Senior (SR): 97
+credit hours onwards For early registration, the class level counts the credit hours already earned
+plus the credit hours registered in the current term. If a FRESHMAN student is registered in 14
+credit hours in term 211, and has already earned 18 credit hours, then the student will be SOPHOMORE
+(SO) in term 212 for early registration purposes (14 + 18 = 32 credit hours). If a JUNIOR student is
+registered for 16 credit hours in term 211, and has already earned 81 credit hours, then the student
+will be SENIOR (SR) in term 212 for early registration purposes (16 + 81 = 97 credit hours). The
+steps to check your class level through the portal are at
+https://registrar.kfupm.edu.sa/docs/pdf/Steps_to_check_Class_Level.pdf

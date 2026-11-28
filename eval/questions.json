@@ -3,7 +3,7 @@
     "id": "q1",
     "question": "What is the minimum course load for an undergraduate student in a regular semester?",
     "expected_answer": "13 credit hours (since term 242; it used to be 12).",
-    "source": "01-04_The_Academic_Levels_System.pdf",
+    "source": "01-04_The_Academic_Levels_System",
     "keywords": [
       "13"
     ]
@@ -12,7 +12,7 @@
     "id": "q3",
     "question": "What share of unexcused absences leads to a DN grade in a course?",
     "expected_answer": "More than 20% of the scheduled lecture and lab sessions.",
-    "source": "01-05_Attendance_And_Withdrawal.pdf",
+    "source": "01-05_Attendance_And_Withdrawal",
     "keywords": [
       "20"
     ]
@@ -21,7 +21,7 @@
     "id": "q4",
     "question": "What cumulative GPA is needed for Highest Honors at graduation?",
     "expected_answer": "A cumulative GPA above 3.85 (from term 282).",
-    "source": "01-11_Examinations_And_Grades.pdf",
+    "source": "01-11_Examinations_And_Grades",
     "keywords": [
       "3.85"
     ]
@@ -56,7 +56,7 @@
     "id": "q8",
     "question": "How much does one transcript cost when requested from outside Dhahran?",
     "expected_answer": "SAR 11.50 per transcript, including VAT.",
-    "source": "32_Transcripts_From_Outside_Dhahran.pdf",
+    "source": "32_Transcripts_From_Outside_Dhahran",
     "keywords": [
       "11.50|11.5"
     ]

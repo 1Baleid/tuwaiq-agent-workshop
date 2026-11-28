@@ -59,11 +59,14 @@ MAX_OUTPUT_TOKENS = 800      # longest reply we accept (models that "think" firs
 # ------------------------------------------------------------
 # 2. Documents and search  (Session 3)
 # ------------------------------------------------------------
-# To swap the documents, point this at another folder with the same layout:
-#   docs/ (the .txt, .md and .pdf files), sources.csv, deadlines.csv
-# Or set the CORPUS_DIR environment variable, e.g. CORPUS_DIR=data/kfupm, without editing this file.
+# The same 34 KFUPM documents come in three copies. Pick one:
+#   data/kfupm_structured  Markdown: one "## heading" section per complete rule (best with CHUNK_BY_SECTION = True)
+#   data/kfupm_raw         the same information as one plain-text dump: no headings, lists or paragraphs
+#   data/sample            the original PDFs
+# Every folder has the same layout: docs/ (the .txt, .md and .pdf files), sources.csv, deadlines.csv.
+# Or set the CORPUS_DIR environment variable, e.g. CORPUS_DIR=data/kfupm_raw, without editing this file.
 import os
-CORPUS_DIR = ROOT / os.environ.get("CORPUS_DIR", "data/sample")
+CORPUS_DIR = ROOT / os.environ.get("CORPUS_DIR", "data/kfupm_structured")
 
 # Small (90 MB) and fast, English only. It reads at most ~256 words per chunk.
 # For Arabic documents use "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" (470 MB).

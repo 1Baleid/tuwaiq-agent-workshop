@@ -1,0 +1,60 @@
+# Undergraduate Regulations, Section 3: Academic Regulations
+
+## Study progress and length of degree plans (Article Five)
+
+a. The student gradually progresses in his study in accordance with the implementation rules approved by the University Council.
+
+b. Degree plans of undergraduate study are designed to comprise a minimum of eight (8) semesters.
+
+## Students are responsible for knowing the regulations (Article Five, rule 1)
+
+The University publishes for the students through available means all rules, regulations, and requirements related to study and graduation at the University, which students are responsible to know and follow. Academic advisors assist students in planning their academic programs, but their academic advising activities do not relieve students of this responsibility. Therefore every student should be thoroughly familiar with all the academic regulations and the degree conferral system and remain informed about them throughout his career at the University. A student may consult with his academic advisor or the department's Chairman in this respect.
+
+## What the academic advisor does (Article Five, rule 2)
+
+The University assigns an academic advisor to each student to assist him in matters relating to his academic progress such as:
+
+1. selecting a degree program consistent with the student's objectives and ability;
+2. interpreting and understanding the academic regulations;
+3. informing the student of the sequence of required and elective courses in his degree program and suggesting electives;
+4. monitoring the student's progress and performance;
+5. assisting in early registration and other registration activities; and
+6. assisting in course substitution, if necessary.
+
+## Who the academic advisor is
+
+The academic advisor is a faculty member in the academic department or the college in which the student is enrolled. The advisor of the preparatory year students is the Assistant Dean for Preparatory Year Affairs in the College of Applied & Supporting Studies or anyone else assigned to act as an advisor amongst the faculty members.
+
+## The degree plan
+
+The courses of each degree are spread over academic levels. The required as well as elective courses and the number of credit hours that a student needs to successfully complete in order to receive a degree in his major field are clearly specified for each academic level. This distribution of courses and credit hours is called "the Degree Plan". All degree plans are approved by the University Council. The academic departments regularly review and update the degree plans in order to provide students with continuously updated programs.
+
+## Academic status: when it is assigned
+
+A student's academic status will be determined at the end of each semester and will appear on the transcript that shows his achievements throughout his undergraduate study. However, the summer semester does not change the academic status. A student's academic status may be Good Standing, Academic Warning or Academic Probation.
+
+## Academic status: Good Standing (GPA at least 2.00)
+
+Good Standing status is maintained when the student's cumulative GPA and semester GPA are at least 2.00. Students are expected to maintain this standing till their graduation.
+
+## Academic status: Academic Warning
+
+A student will be placed under Academic Warning status after the final grades have been processed at the end of each semester (except summer semester) if any of the following cases occurs. [The source page does not list the cases.]
+
+## Academic status: Academic Probation (cumulative GPA below 1.00)
+
+A student is placed under Academic Probation status after the final grades have been processed at the end of each semester (except summer semester), if his cumulative GPA is less than 1.00.
+
+## Discontinuation from study
+
+Carrying forward the academic status that was assigned to a student at the end of his last semester in the Preparatory Year program, he shall be discontinued for at least one semester if any of the following cases occurs. [The source page does not list the cases.]
+
+The Rector of the University may however give the student an opportunity to continue his studies following the recommendation of the Admission & Academic Standing Committee.
+
+## Two undergraduate degrees (32 credit hours and GPA 3.00)
+
+After obtaining the approval of the two department councils and the two college councils concerned, a student may apply for two undergraduate degrees provided he has completed at least 32 credit hours and his cumulative GPA is not less than 3.00. The two degrees are granted when the following requirements are fulfilled. [The source page does not list the requirements.]
+
+## Part-time study for KFUPM employees
+
+KFUPM employees may be admitted and registered for an undergraduate program on a part-time basis in accordance with the procedures approved by the Rector of the University.

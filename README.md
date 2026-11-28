@@ -44,7 +44,7 @@ python scripts/smoke_test.py
 | `agent.py` | 3–4 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
 | `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S4) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
-| `data/sample/` | | KFUPM corpus (34 public registrar and bulletin pages as PDF): `docs/`, `sources.csv`, `deadlines.csv` (see its README) |
+| `data/` | | the KFUPM documents in three copies: `kfupm_structured/` (Markdown, default), `kfupm_raw/` (plain dump), `sample/` (original PDFs) |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
 | `scripts/` | | instructor tools (table below) |
 | `docs/` | | decisions, pre-work, known errors, handovers |
@@ -197,4 +197,4 @@ FAISS was chosen over ChromaDB: on Colab it installs one package with no conflic
 
 `docs/llm_options.md` (T1) · `docs/llm_decision.md` (T2) · `docs/prework.md` · `docs/known_errors.md` · `docs/handover/`
 
-Documents: public pages of King Fahd University of Petroleum & Minerals (KFUPM), saved as PDF; source URL per file in `data/sample/sources.csv`.
+Documents: public pages of King Fahd University of Petroleum & Minerals (KFUPM): original PDFs in `data/sample/`, a structured Markdown copy in `data/kfupm_structured/` and a plain-text copy in `data/kfupm_raw/`; source URL per file in each `sources.csv`.

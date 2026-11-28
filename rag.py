@@ -95,6 +95,16 @@ def chunk_text(text, chunk_size=None, overlap=None):
 def make_chunks(documents):
     """Chunk every document. Each chunk remembers where it came from:
     {"id": "01-05_Attendance_And_Withdrawal.pdf#0", "source": "01-05_Attendance_And_Withdrawal.pdf", "chunk": 0, "text": "..."}"""
+    # PLAY WITH THE CHUNKING: change these in config.py, then search again (the index rebuilds by itself).
+    #   CHUNK_BY_SECTION  False = a word window that ignores the document's structure (chunk_text)
+    #                     True  = one chunk per "## heading" section, with the heading in front (chunk_by_section)
+    #   CHUNK_SIZE        words per window. With CHUNK_BY_SECTION = True, a section longer than this is cut
+    #                     into pieces. In data/kfupm_structured, 240 of 253 sections fit in 120 words and the
+    #                     longest has 167, so CHUNK_SIZE = 170 keeps every rule whole in one chunk.
+    #   CHUNK_OVERLAP     words two neighbouring windows share, so a sentence cut at a border survives.
+    #   CORPUS_DIR        data/kfupm_structured (sections) or data/kfupm_raw (one plain dump of the same text).
+    # Try: raw + word windows, structured + word windows, structured + sections; then CHUNK_SIZE 30 vs 300.
+    # Compare which chunk search_docs() puts first for the same question.
     chunks = []
     for doc in documents:
         pieces = chunk_by_section(doc) if config.CHUNK_BY_SECTION else chunk_text(doc["text"])

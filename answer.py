@@ -18,6 +18,7 @@ answer() must return {"answer": str, "citations": [{"n", "source", "chunk"}, ...
 """
 import json
 import re
+from pathlib import Path
 
 import config
 from llm import chat
@@ -113,11 +114,16 @@ def load_tests():
             if not (q["source"] or "").startswith("tool:")]  # tool questions are for the agent (Session 5)
 
 
+def same_document(source, expected):
+    """'01-05_Attendance.md' matches '01-05_Attendance': the .pdf, .md and .txt copies count as one document."""
+    return Path(source).stem == Path(expected).stem
+
+
 def passed(result, expected):
     """Pass = the expected file is among the citations, or the assistant says "I don't know"."""
     if expected is None:
         return "i don't know" in result["answer"].lower()
-    return expected in {citation["source"] for citation in result["citations"]}
+    return any(same_document(citation["source"], expected) for citation in result["citations"])
 
 
 def mini_test(tests=None):
@@ -135,7 +141,7 @@ def mini_test(tests=None):
 def hit_at_k(question, expected, k=3):
     """Did search even find the right document in its top k?"""
     hits = search_docs(question, k)
-    return any(p["source"] == expected for p in hits)
+    return any(same_document(p["source"], expected) for p in hits)
 
 
 def diagnose(tests=None, k=None):
