@@ -3,7 +3,7 @@
     "id": "q1",
     "question": "What is the minimum course load for an undergraduate student in a regular semester?",
     "expected_answer": "13 credit hours (since term 242; it used to be 12).",
-    "source": "01-04_The_Academic_Levels_System",
+    "source": "01-04_The_Academic_Levels_System|28_Minimum_Load_13_Credit_Hours",
     "keywords": [
       "13"
     ]
@@ -21,7 +21,7 @@
     "id": "q4",
     "question": "What cumulative GPA is needed for Highest Honors at graduation?",
     "expected_answer": "A cumulative GPA above 3.85 (from term 282).",
-    "source": "01-11_Examinations_And_Grades",
+    "source": "01-11_Examinations_And_Grades|26_Honors_Revision_Notice",
     "keywords": [
       "3.85"
     ]
@@ -63,21 +63,20 @@
   },
   {
     "id": "q9",
-    "question": "What is the last day to add or drop a course?",
-    "expected_answer": "Thursday 26 November 2026 (end of the add/drop period).",
+    "question": "What is the last day to drop a course without a permanent record?",
+    "expected_answer": "Tuesday 1 September 2026 (adding courses ended on 23 August).",
     "source": "tool:get_deadline",
     "keywords": [
-      "26",
-      "November|Nov"
+      "September 1|Sept. 1|Sep. 1|Sept 1|Sep 1|1 September|1st of September|2026-09-01"
     ]
   },
   {
     "id": "q10",
     "question": "When is the course withdrawal deadline?",
-    "expected_answer": "Thursday 17 December 2026.",
+    "expected_answer": "Thursday 3 December 2026 (withdrawal from all courses with a W).",
     "source": "tool:get_deadline",
     "keywords": [
-      "17",
+      "3",
       "December|Dec"
     ]
   }

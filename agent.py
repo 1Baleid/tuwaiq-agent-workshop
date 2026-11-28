@@ -22,7 +22,7 @@ import tools
 
 # TODO 1-3: add these rules to the prompt below.
 # 1. Call search_docs before answering a document question.
-# 2. Cite sources like [01-05_Attendance_And_Withdrawal.pdf#3].
+# 2. Cite sources like [01-05_Attendance_And_Withdrawal.txt#3].
 # 3. Answer "{i_dont_know}" when the tools cannot help.
 SYSTEM_PROMPT = """You are a helpful assistant. Use the tools to answer questions.
 
@@ -107,7 +107,13 @@ def run_agent(question, history=None):
         result["stopped"] = "max_steps"
     if result["answer"] is None:
         result["answer"] = f"Sorry, I could not finish this question (stopped: {result['stopped']})."
-    known_ids = {chunk["id"] for chunk in rag.get_store()["chunks"]}  # only real chunk ids
+    # Only real chunk ids count as sources. Without a search there is nothing to cite, so the index is not
+    # needed: the agent can answer calculator and deadline questions before rag.py is written.
+    searched = "search_docs" in result["tools_used"]
+    try:
+        known_ids = {chunk["id"] for chunk in rag.get_store()["chunks"]} if searched else set()
+    except NotImplementedError:  # rag.py is not written yet: no index, so no sources
+        known_ids = set()
     result["sources"] = answer.cited_sources(result["answer"], known_ids)
     result["seconds"] = round(time.monotonic() - started, 1)
     # remember this turn so the next question can refer back

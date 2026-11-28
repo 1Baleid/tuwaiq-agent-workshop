@@ -1,14 +1,20 @@
 """
-rag.py - Session 3: from documents to a searchable index. Fill in the short TODOs.
+rag.py - Session 3: from documents to a searchable index.
 
     documents  ->  chunks  ->  embeddings  ->  index  ->  search_docs()
 
-  Lab 1  load_documents()    read every .md / .txt file (TODO 1-2)
-  Lab 2  chunk_text()        cut a text into pieces of words that overlap (TODO 3-4)
-  Lab 3  embed()             turn text into meaning-vectors; compare with keyword_search()
-  Lab 4  numpy_search()      search by hand (TODO 5), then build_index() with ChromaDB (TODO 6)
-         search_docs()       find the closest chunks, distance -> score (TODO 7)
-  Fix    chunk_by_section()  one chunk per section, labelled with its heading (TODO 8)
+The functions below are EMPTY: you build them with the coding harness (harness.py). Each one has a
+docstring (what it returns) and numbered comments (how): together they are the specification the
+harness follows. One request per step works best, for example:
+
+    python harness.py "Write read_file and load_documents in rag.py, then run run_check('load')"
+
+  Step 1  read_file(), load_documents()        read every .md / .txt / .pdf file
+  Step 2  chunk_text(), make_chunks()          cut texts into overlapping pieces of words
+  Step 3  embed()                              turn text into meaning-vectors (compare with keyword_search())
+  Step 4  numpy_search(), build_index()        search by hand, then a ChromaDB index
+          search_docs()                        find the closest chunks, distance -> score
+  Fix     split_sections(), chunk_by_section() one chunk per section, labelled with its heading
 
 search_docs() must return a list of {"text", "source", "chunk", "score", "id"}, best first.
 answer.py and the harness (tools.py) use it.
@@ -38,63 +44,65 @@ _index = None    # the index get_index() built last
 
 # ---------------------------------------------------------------- Lab 1: load
 def read_file(path):
-    """The text of one file, or None if we cannot read this kind of file (yet)."""
-    path = Path(path)
-    if path.suffix.lower() in (".md", ".txt"):
-        with open(path, encoding="utf-8") as f:
-            # TODO 1: read the whole file and return its text.
-            raise NotImplementedError("TODO 1: read the whole file and return its text")
-    if path.suffix.lower() == ".pdf":  # PDFs need a library to read them: given
-        from pypdf import PdfReader
-        return "\n".join(page.extract_text() or "" for page in PdfReader(path).pages)
-    return None
+    """Return the text of one file, or None if this kind of file cannot be read.
+
+    path: a str or Path. Returns: str, or None.
+    """
+    # 1. Turn `path` into a Path.
+    # 2. If its suffix (lower case) is ".md" or ".txt": open it with encoding="utf-8" and return the whole text.
+    # 3. If its suffix is ".pdf": from pypdf import PdfReader, and return the text of every page joined with
+    #    "\n" (use page.extract_text() or "" for each page).
+    # 4. Any other suffix: return None.
+    raise NotImplementedError("write read_file()")
 
 
 def load_documents(folder=None):
-    """Read every document in the folder (default: config.CORPUS_DIR, e.g. data/kfupm_raw).
-    Each document becomes {"source": "01-05_Attendance_And_Withdrawal.pdf", "text": "Article Nine: a student must attend ..."}."""
-    folder = Path(folder or config.CORPUS_DIR)
-    docs, skipped = [], []
-    for path in sorted(glob.glob(str(folder / "*"))):
-        text = read_file(path)
-        if text is None:
-            skipped.append(os.path.basename(path))
-            continue
-        # TODO 2: add {"source": the file name (os.path.basename(path)), "text": text} to docs.
-    print(f"Loaded {len(docs)} documents from {folder}")
-    for doc in docs:
-        print(f"  {doc['source']}: {len(doc['text'].split())} words")
-    if skipped:
-        print(f"Skipped {len(skipped)} file(s) this loader cannot read: {', '.join(skipped)}")
-    return docs
+    """Read every document in a folder.
+
+    folder: a folder path, or None for config.CORPUS_DIR (e.g. data/kfupm_raw). The documents are directly
+    in this folder (there is no docs/ subfolder).
+    Returns: a list of dicts, one per readable file, in file-name order:
+        [{"source": "01-05_Attendance_And_Withdrawal.txt", "text": "Article Nine: ..."}, ...]
+    "source" is the file name only (os.path.basename), never a full path.
+    """
+    # 1. folder = Path(folder or config.CORPUS_DIR)
+    # 2. Loop over sorted(glob.glob(str(folder / "*"))) and call read_file(path) for each.
+    # 3. If read_file returns None, remember the file name in a "skipped" list and go on.
+    # 4. Otherwise append {"source": os.path.basename(path), "text": text}.
+    # 5. Print f"Loaded {len(docs)} documents from {folder}", then one line per skipped file if any.
+    # 6. Return the list.
+    raise NotImplementedError("write load_documents()")
 
 
 # ---------------------------------------------------------------- Lab 2: chunk
 def chunk_text(text, chunk_size=None, overlap=None):
-    """Cut text into chunks of `chunk_size` words. Neighbouring chunks share `overlap` words,
-    so a sentence cut at a border is still whole in one of them.
+    """Cut a text into chunks of `chunk_size` words. Neighbouring chunks share `overlap` words.
+
+    chunk_size: words per chunk (None = config.CHUNK_SIZE). overlap: shared words (None = config.CHUNK_OVERLAP).
+    Returns: a list of str, each chunk being its words joined with one space. Empty text gives [].
 
     chunk_text("one two three four five six seven eight nine ten", 4, 1)
-    -> ['one two three four', 'four five six seven', 'seven eight nine ten']"""
-    chunk_size = chunk_size or config.CHUNK_SIZE
-    overlap = config.CHUNK_OVERLAP if overlap is None else overlap
-    if overlap >= chunk_size:
-        raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
-    words = text.split()
-    # TODO 3: step = how many words each chunk starts after the previous one (chunk_size and overlap).
-    raise NotImplementedError("TODO 3-4: set step, then slice chunk_words")
-    chunks = []
-    for start in range(0, len(words), step):
-        # TODO 4: chunk_words = the chunk_size words that begin at `start`.
-        chunks.append(" ".join(chunk_words))
-        if start + chunk_size >= len(words):  # this chunk reached the end of the text
-            break
-    return chunks
+    -> ['one two three four', 'four five six seven', 'seven eight nine ten']
+    """
+    # 1. Fill in the defaults (overlap can be 0, so test "overlap is None", not "not overlap").
+    # 2. If overlap >= chunk_size: raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE").
+    # 3. words = text.split(); step = chunk_size - overlap.
+    # 4. For start in range(0, len(words), step): add " ".join(words[start:start + chunk_size]);
+    #    stop right after the chunk that reaches the end (start + chunk_size >= len(words)),
+    #    so the last words never appear as an extra tiny chunk.
+    raise NotImplementedError("write chunk_text()")
 
 
 def make_chunks(documents):
-    """Chunk every document. Each chunk remembers where it came from:
-    {"id": "01-05_Attendance_And_Withdrawal.pdf#0", "source": "01-05_Attendance_And_Withdrawal.pdf", "chunk": 0, "text": "..."}"""
+    """Chunk every document. Each chunk remembers where it came from.
+
+    documents: the list from load_documents().
+    Returns: a list of dicts, numbered from 0 inside each document:
+        {"id": "01-05_Attendance_And_Withdrawal.txt#0", "source": "01-05_Attendance_And_Withdrawal.txt",
+         "chunk": 0, "text": "..."}
+    The id MUST be exactly f"{source}#{number}" with a plain integer: the citation code only accepts ids
+    like "file.txt#3" (never "file.txt#3-1").
+    """
     # PLAY WITH THE CHUNKING: change these in config.py, then search again (the index rebuilds by itself).
     #   CHUNK_BY_SECTION  False = a word window that ignores the document's structure (chunk_text)
     #                     True  = one chunk per "## heading" section, with the heading in front (chunk_by_section)
@@ -108,28 +116,32 @@ def make_chunks(documents):
     #   CORPUS_DIR        data/kfupm_structured (sections) or data/kfupm_raw (one plain dump of the same text).
     # Try: raw + word windows, structured + word windows, structured + sections; then CHUNK_SIZE 30 vs 300.
     # Compare which chunk search_docs() puts first for the same question.
-    chunks = []
-    for doc in documents:
-        pieces = chunk_by_section(doc) if config.CHUNK_BY_SECTION else chunk_text(doc["text"])
-        for number, text in enumerate(pieces):
-            chunks.append({"id": f"{doc['source']}#{number}", "source": doc["source"],
-                           "chunk": number, "text": text})
-    return chunks
+    #
+    # How to write this function:
+    # 1. For each document, get its pieces (a list of str):
+    #      config.CHUNK_BY_SECTION is True  -> pieces = chunk_by_section(doc)
+    #      config.CHUNK_BY_SECTION is False -> pieces = chunk_text(doc["text"])
+    #    Read config.CHUNK_BY_SECTION here, every call (students change it while the program runs).
+    # 2. For number, text in enumerate(pieces): append the dict above.
+    # 3. Return all chunks of all documents in one list.
+    raise NotImplementedError("write make_chunks()")
 
 
 # ---------------------------------------------------------------- Lab 3: embed
 def embed(texts):
-    """Turn texts into meaning-vectors, one row per text (384 numbers each for all-MiniLM-L6-v2).
-    Texts with similar meaning get nearby vectors. The first call downloads the model (about 90 MB)."""
-    name = config.EMBEDDING_MODEL
-    if name not in _embedders:
-        from huggingface_hub.utils import logging as hf_logging
-        from sentence_transformers import SentenceTransformer
-        hf_logging.set_verbosity_error()  # hides a harmless "Please set a HF_TOKEN" warning (no key is needed)
-        _embedders[name] = SentenceTransformer(name)
-    # normalize: every vector gets length 1, so "dot product" = cosine similarity (1 = same meaning)
-    vectors = _embedders[name].encode(texts, normalize_embeddings=True)
-    return np.asarray(vectors, dtype="float32")
+    """Turn texts into meaning-vectors: a numpy array with one row per text, dtype float32,
+    each row of length 1 (normalized), so a dot product of two rows is their cosine similarity.
+
+    texts: a list of str. Returns: np.ndarray of shape (len(texts), 384) for all-MiniLM-L6-v2.
+    """
+    # 1. name = config.EMBEDDING_MODEL.
+    # 2. Load the model only once per name: keep it in the module dict _embedders.
+    #    To load: from sentence_transformers import SentenceTransformer; SentenceTransformer(name).
+    #    Before loading, hide the harmless HF_TOKEN warning:
+    #      from huggingface_hub.utils import logging as hf_logging; hf_logging.set_verbosity_error()
+    # 3. vectors = model.encode(texts, normalize_embeddings=True)
+    # 4. Return np.asarray(vectors, dtype="float32").
+    raise NotImplementedError("write embed()")
 
 
 def similarity(text_a, text_b):
@@ -152,12 +164,16 @@ def keyword_search(query, chunks, k=3):
 # ---------------------------------------------------------------- Lab 4: index & search
 def numpy_search(query, chunks, vectors, k=3):
     """Search by hand: compare the query with every chunk, sort, keep the top k.
-    `vectors` = embed([chunk["text"] for chunk in chunks])."""
-    query_vector = embed([query])[0]
-    # TODO 5: scores = one similarity per chunk, in ONE numpy line (dot product of vectors and query_vector).
-    raise NotImplementedError("TODO 5: one numpy line for the scores")
-    best = np.argsort(-scores)[:k]  # positions of the k highest scores
-    return [{**chunks[i], "score": float(scores[i])} for i in best]
+
+    chunks: the list from make_chunks(). vectors: embed([chunk["text"] for chunk in chunks]).
+    Returns: the k best chunks, best first, each a copy of the chunk dict plus "score" (a Python float):
+        [{**chunk, "score": 0.71}, ...]
+    """
+    # 1. query_vector = embed([query])[0]
+    # 2. scores = vectors @ query_vector   (one cosine similarity per chunk, in one numpy line)
+    # 3. best = np.argsort(-scores)[:k]    (positions of the k highest scores)
+    # 4. Return [{**chunks[i], "score": float(scores[i])} for i in best].
+    raise NotImplementedError("write numpy_search()")
 
 
 class NumpyCollection:
@@ -197,38 +213,42 @@ def new_collection():
 
 
 def build_index(chunks):
-    """Embed every chunk and store it in a vector database. Returns the index search_docs() needs."""
-    vectors = embed([chunk["text"] for chunk in chunks])
-    collection = new_collection()
-    # TODO 6: fill in embeddings (vectors.tolist()) and metadatas ({"source": ..., "chunk": ...} per chunk).
-    raise NotImplementedError("TODO 6: give Chroma the embeddings and the sources")
-    collection.add(
-        ids=[chunk["id"] for chunk in chunks],
-        embeddings=...,
-        documents=[chunk["text"] for chunk in chunks],
-        metadatas=...,
-    )
-    print(f"Indexed {len(chunks)} chunks (CHUNK_SIZE={config.CHUNK_SIZE} words, "
-          f"CHUNK_OVERLAP={config.CHUNK_OVERLAP}, CHUNK_BY_SECTION={config.CHUNK_BY_SECTION})")
-    return {"collection": collection, "chunks": chunks, "vectors": vectors, "settings": _settings()}
+    """Embed every chunk and store it in a vector database (ChromaDB, or the numpy fallback).
+
+    chunks: the list from make_chunks().
+    Returns: a dict with exactly these keys (get_index() and search_docs() rely on them):
+        {"collection": <the collection>, "chunks": chunks, "vectors": <the embed() array>,
+         "settings": _settings()}
+    """
+    # 1. vectors = embed([chunk["text"] for chunk in chunks])
+    # 2. collection = new_collection()   (given above: ChromaDB, or NumpyCollection when chromadb is missing)
+    # 3. Call collection.add ONCE with four keyword arguments, all lists in the same order as chunks:
+    #      ids=[chunk["id"] ...], embeddings=vectors.tolist(), documents=[chunk["text"] ...],
+    #      metadatas=[{"source": chunk["source"], "chunk": chunk["chunk"]} ...]
+    # 4. Print f"Indexed {len(chunks)} chunks (CHUNK_SIZE={config.CHUNK_SIZE} words, "
+    #          f"CHUNK_OVERLAP={config.CHUNK_OVERLAP}, CHUNK_BY_SECTION={config.CHUNK_BY_SECTION})"
+    # 5. Return the dict above.
+    raise NotImplementedError("write build_index()")
 
 
 def search_docs(query, k=None, index=None):
     """Find the k chunks closest in meaning to the query, best first.
-    Returns [{"text", "source", "chunk", "score", "id"}, ...]; higher score = closer in meaning."""
-    k = k or config.TOP_K
-    index = index or get_index()
-    if index["settings"] != _settings():
-        print("Warning: chunk/model/corpus settings changed since build_index(). Build the index again.")
-    found = index["collection"].query(query_embeddings=embed([query]).tolist(),
-                                      n_results=min(k, index["collection"].count()))
-    results = []
-    for chunk_id, text, meta, distance in zip(found["ids"][0], found["documents"][0],
-                                              found["metadatas"][0], found["distances"][0]):
-        # TODO 7: add {"id", "text", "source", "chunk", "score"} to results. Chroma gives a distance:
-        #         score = 1 - distance (higher = closer in meaning). source and chunk are in meta.
-        raise NotImplementedError("TODO 7: build each result; score = 1 - distance")
-    return results
+
+    k: how many (None = config.TOP_K). index: the dict from build_index() (None = get_index()).
+    Returns: a list of dicts with exactly these keys, highest score first:
+        [{"id": "x.txt#3", "text": "...", "source": "x.txt", "chunk": 3, "score": 0.68}, ...]
+    "score" is a Python float, 1 - distance (higher = closer in meaning). "chunk" is an int.
+    """
+    # 1. Fill in k and index. If index["settings"] != _settings(), print a warning that the settings
+    #    changed since build_index() (do not rebuild here).
+    # 2. found = index["collection"].query(query_embeddings=embed([query]).tolist(),
+    #                                      n_results=min(k, index["collection"].count()))
+    #    found["ids"][0], found["documents"][0], found["metadatas"][0], found["distances"][0] are lists,
+    #    in the same order, best first.
+    # 3. For each (chunk_id, text, meta, distance): append {"id": chunk_id, "text": text,
+    #    "source": meta["source"], "chunk": int(meta["chunk"]), "score": 1 - float(distance)}.
+    # 4. Return the list.
+    raise NotImplementedError("write search_docs()")
 
 
 # ---------------------------------------------------------------- The fix: chunk by section
@@ -236,30 +256,36 @@ HEADING = re.compile(r"^\s*(?:#{1,6}\s+(.+?)|=+\s*(.+?)\s*=+)\s*$")  # "## Refun
 
 
 def split_sections(text):
-    """Split a text at its headings: [(heading, body), ...]. Text before the first heading has heading None."""
-    sections, heading, lines = [], None, []
-    for line in text.splitlines():
-        match = HEADING.match(line)
-        if match:
-            sections.append((heading, "\n".join(lines)))
-            heading, lines = (match.group(1) or match.group(2)).strip(), []
-        else:
-            lines.append(line)
-    sections.append((heading, "\n".join(lines)))
-    return [(heading, body) for heading, body in sections if body.strip()]
+    """Split a text at its headings (lines that match HEADING, e.g. "## Refunds" or "== Refunds ==").
+
+    Returns: a list of (heading, body) tuples in order. heading is the heading text without the "#" or "="
+    marks, stripped; text before the first heading gets heading None. Sections whose body is empty or only
+    whitespace are left out.
+        split_sections("intro\n## A\nfirst\n## B\nsecond") -> [(None, "intro"), ("A", "first"), ("B", "second")]
+    """
+    # 1. Walk the lines (text.splitlines()), keeping the current heading (start: None) and its lines.
+    # 2. When a line matches HEADING: save (current heading, "\n".join(lines)) and start a new section with
+    #    heading = (match.group(1) or match.group(2)).strip(). The heading line itself is not part of a body.
+    # 3. After the loop, save the last section.
+    # 4. Return only the sections whose body.strip() is not empty.
+    raise NotImplementedError("write split_sections()")
 
 
 def chunk_by_section(doc):
-    """One chunk per section, each starting with its address, e.g. "01-05 attendance and withdrawal > Article nine: ...".
-    A section longer than CHUNK_SIZE words is cut with chunk_text(), and every piece keeps the label."""
-    title = Path(doc["source"]).stem.replace("_", " ").capitalize()  # "01-05_Attendance_And_Withdrawal.pdf" -> "01-05 attendance and withdrawal"
-    chunks = []
-    for heading, body in split_sections(doc["text"]):
-        label = f"{title} > {heading}" if heading else title
-        for piece in chunk_text(body):
-            # TODO 8: add the piece to chunks with its label in front: "<label>: <piece>".
-            raise NotImplementedError("TODO 8: put the label in front of each piece")
-    return chunks
+    """One chunk per section, each starting with its address (label), for CHUNK_BY_SECTION = True.
+
+    doc: one dict from load_documents().
+    Returns: a list of str (NOT dicts: make_chunks() adds the id, source and chunk number), e.g.
+        ["01-05 attendance and withdrawal > Unexcused absences over 20% give a DN grade: If the number ...", ...]
+    """
+    # 1. title = Path(doc["source"]).stem.replace("_", " ").capitalize()
+    #      "01-05_Attendance_And_Withdrawal.md" -> "01-05 attendance and withdrawal"
+    # 2. For each (heading, body) in split_sections(doc["text"]):
+    #      label = f"{title} > {heading}" if heading else title
+    #      cut the body with chunk_text(body) (a section longer than CHUNK_SIZE words gives several pieces)
+    #      and add f"{label}: {piece}" for every piece, so every piece keeps its label.
+    # 3. Return the list of strings.
+    raise NotImplementedError("write chunk_by_section()")
 
 
 # ---------------------------------------------------------------- one shared index

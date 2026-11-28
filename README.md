@@ -8,9 +8,10 @@ The project has two layers:
 
 * **The RAG system** (`rag.py`, `answer.py`, `tools.py`, `llm.py`) is the target. It loads the
   documents, searches them, and turns the best passages into an answer with citations.
-* **The harness** (`agent.py`) is what you build. A model can only reply with text; the harness
-  turns that text into searches, tool calls and a final answer. Your system prompt and loop decide
-  how well the model uses the RAG system.
+* **The Q&A agent** (`agent.py`, Sessions 1-2) is the loop you complete: a model can only reply with
+  text, and the loop turns that text into searches, tool calls and a final answer.
+* **The coding harness** (`harness.py`, Session 3) is given complete. You ask it, in plain English, to
+  build the empty functions of the RAG system, and you check what it wrote.
 
 By the end you have a personalized harness tuned for RAG: it retrieves before it answers, cites
 the chunks it used, refuses to guess, and logs every step so you can see why it failed.
@@ -38,18 +39,65 @@ python scripts/smoke_test.py
 | File | Session | What it does |
 |---|---|---|
 | `config.py` | all | **Every setting**, including the one LLM switch `LLM_PROVIDER` |
-| `rag.py` | 3 | load documents → chunks → embeddings → ChromaDB index → `search_docs()` |
-| `answer.py` | 3 | answer from the best chunks, with citations like `[01-05_Attendance_And_Withdrawal.md#3]`, or "I don't know" |
+| `rag.py` | 3 | **built with the harness:** load documents → chunks → embeddings → ChromaDB index → `search_docs()` (empty functions + specification) |
+| `answer.py` | 3 | **built with the harness:** answer from the best chunks, with citations like `[1]`, or "I don't know" |
+| `harness.py` | 3 | **given complete:** the coding harness you ask to build `rag.py` and `answer.py` (see below) |
 | `tools.py` | 1–2 | the tool registry: `search_docs`, `calculator`, `get_deadline`, plus `validate_call()` |
-| `agent.py` | 1–2 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
-| `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S2) |
+| `agent.py` | 1–2 | **you complete it:** the Q&A agent loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
+| `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (given complete: the harness needs it) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
 | `data/` | | the 34 KFUPM documents in three folders: `kfupm_raw/` (plain text, default, used in the slides), `kfupm_structured/` (Markdown), `kfupm_pdf/` (originals), plus `deadlines.csv`. See `data/README.md` |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
 | `scripts/` | | instructor tools (table below) |
 | `docs/` | | decisions, pre-work, known errors, handovers |
 
-## Build the harness (`agent.py`)
+## Use the coding harness (`harness.py`, Session 3)
+
+In Session 3 you do not type the RAG code yourself: you ask the coding harness to build it, the way
+you would ask Claude Code or Codex. The functions in `rag.py` and `answer.py` are **empty**; each has a
+docstring (what it returns) and numbered comments (how). Together they are the specification the
+harness follows. Your job is to give it good requests, watch it work, and check what it built.
+
+**How to ask it something:** run the file with your request in quotes, from the project folder.
+
+```bash
+cd tuwaiq                                   # the project folder (cd goes into folders, not files)
+python harness.py "Which functions in rag.py are still empty? Do not change anything."
+```
+
+In Colab, put `!` in front: `!python harness.py "..."`.
+
+It prints every step while it works (`read_file`, `edit_file`, `run_check`, ...) and ends with its
+answer. **One request per run:** each run starts fresh and does not remember the previous one.
+
+**One step per request works best.** A good order for Session 3:
+
+```bash
+python harness.py "Write read_file and load_documents in rag.py, then run run_check('load')"
+python harness.py "Write chunk_text and make_chunks in rag.py, then run run_check('chunks')"
+python harness.py "Write embed, numpy_search, build_index and search_docs in rag.py, then run run_check('search')"
+python harness.py "Write split_sections and chunk_by_section in rag.py, then run run_check('sections')"
+python harness.py "Write the four empty functions in answer.py, then run run_check('answer')"
+```
+
+**After every request, check its work:**
+
+* `git diff rag.py` shows exactly what it changed. Read it: can you explain each line?
+* `python scripts/smoke_test.py` runs every check yourself (PASS / FAIL / TODO).
+* `logs/harness.jsonl` has every step it took, when you need to know why it got stuck.
+* `git restore rag.py` throws its changes away, so you can try again with a better request.
+
+**Its checks:** one per step: `load`, `chunks` (incl. the id format), `search`, `sections`, and
+`answer` for `answer.py`; `rag` runs all four `rag.py` checks. Name the check in your request. The harness may not finish until the check it ran
+after its last edit passes. What the checks do not test, it can still get wrong: that is why you read
+the diff.
+
+**Safety:** its file tools stay inside the project, refuse to open `.env` (your key), and cannot change
+`data/` or `eval/questions.json`; it runs only `python`, `pytest` and read-only `git`. These are guard
+rails for class, not a sandbox (`python` can still do anything you can), so run it on your own copy of
+the project and read its changes before you keep them.
+
+## The Q&A agent (`agent.py`, Sessions 1–2)
 
 `agent.py` is the Session 1–2 file you complete. The rest of the repo gives you
 the pieces: `rag.py` finds chunks, `answer.py` formats and checks citations, `tools.py` runs the
@@ -82,13 +130,6 @@ A harness that is good at RAG does five things:
 
 Compare your harness with `eval/questions.json`: a change is only an improvement if it makes more
 of those questions pass without making the "I don't know" cases worse.
-
-**Instructor reference:** `harness_solution.py` is a complete coding harness for a different
-layer of the workshop: it lists, reads, writes and edits files, runs the workshop checks
-(`smoke`, `eval`, `tests`), can ask the RAG system a question (`ask_rag`), refuses to write
-`data/` or `eval/questions.json`, and will not accept an answer after an unverified edit.
-`agent.py` is the RAG agent loop students build in Sessions 1–2. The solution file is
-excluded from the student repo.
 
 ## Settings to change on purpose ("break it, then fix it")
 
@@ -129,9 +170,9 @@ The `openrouter` entry in `config.py` uses `deepseek/deepseek-chat`. Swap that l
 `deepseek/deepseek-v4.1-flash` (cheaper, 1M context) or `deepseek/deepseek-v3.2` if you prefer.
 OpenRouter is OpenAI-compatible, so `llm.py` does not change.
 
-The instructor harness uses the same provider. To try another model for one run:
+The coding harness uses the same provider. To try another model for one run:
 ```bash
-python harness_solution.py "your task" --model deepseek/deepseek-v4.1-flash
+python harness.py "your task" --model deepseek/deepseek-v4.1-flash
 ```
 
 **Plan B, `local`:** a small open model (`qwen3:4b-instruct`) run by Ollama inside each student's
@@ -178,7 +219,7 @@ For Arabic documents, also change `EMBEDDING_MODEL` (see the comment in `config.
 | `python scripts/load_test.py shared --n 30` | can one key serve N students at once? (`burst` = one student) |
 | `python scripts/tool_format_test.py local` | which tool-call format a model follows |
 | `python scripts/local_model.py` | start the local fallback model |
-| `python harness_solution.py "task"` | reference coding harness on OpenRouter + DeepSeek: inspect, edit and test the RAG code (instructor only; `--provider` / `--model` override) |
+| `python harness.py "task"` | the coding harness: inspect, edit and test the RAG code (`--provider` / `--model` override, `--print-prompt` shows its prompt) |
 | `python scripts/make_main.py [--check]` | build `main` from `solutions` |
 | `python scripts/publish_students.py [URL]` | copy both branches to the student repo (without internal docs) |
 | `python eval_runner.py` | run the evaluation set from a terminal |

@@ -9,7 +9,8 @@ Each question in eval/questions.json looks like:
     {"id": "q1",
      "question": "What is the minimum course load in a regular semester?",
      "expected_answer": "13 credit hours",
-     "source": "01-04_The_Academic_Levels_System",  # file that holds the answer (no extension); "tool:<name>" if a tool
+     "source": "01-04_The_Academic_Levels_System",  # file that holds the answer (no extension; "a|b" = either);
+                                            # "tool:<name>" if a tool
                                             # gives it; null if the right answer is "I don't know"
      "keywords": ["13"]}                    # words the answer must contain; "a|b" means a OR b
 
@@ -41,7 +42,7 @@ def check(result, question):
         return answer_ok, source.removeprefix("tool:") in result["tools_used"]
     # "x.md#3" -> "x": the .pdf, .md and .txt copies of a document count as the same document
     cited_files = {Path(source_id.split("#")[0]).stem for source_id in result["sources"]}
-    return answer_ok, Path(source).stem in cited_files
+    return answer_ok, any(Path(option).stem in cited_files for option in source.split("|"))
 
 
 def run_eval(path=None):

@@ -1,14 +1,19 @@
 """
-answer.py - Session 3: RAG answers you can trust. Fill in the short TODOs.
+answer.py - Session 3: RAG answers you can trust.
 
     question -> search_docs() -> numbered passages -> prompt -> LLM -> answer with [citations]
                                                                        or "I don't know"
 
-  Lab 1  format_passages()    number the passages so they can be cited (TODO 1)
-  Lab 2  answer_naive()       the first RAG answer, with and without RAG (TODO 2-3)
-  Lab 3  extract_citations()  map [2] back to a real file, catch invented numbers (TODO 4-5)
-  Break  answer()             the final function: score threshold + refusal rule (TODO 6-7)
-  Test   mini_test(), hit_at_k(), diagnose()
+The four functions marked EMPTY are built with the coding harness (harness.py), like rag.py:
+their docstrings and comments are the specification. For example:
+
+    python harness.py "Write format_passages and answer_naive in answer.py, then run run_check('answer')"
+
+  Step 1  format_passages()    number the passages so they can be cited
+  Step 2  answer_naive()       the first RAG answer, with and without RAG
+  Step 3  extract_citations()  map [2] back to a real file, catch invented numbers
+  Fix     answer()             the final function: score threshold + refusal rule
+  Test    mini_test(), hit_at_k(), diagnose()   (given)
 
 answer() must return {"answer": str, "citations": [{"n", "source", "chunk"}, ...], "passages": [...]}.
 
@@ -34,25 +39,33 @@ def llm(prompt):
 
 # ---------------------------------------------------------------- Lab 1: label the passages
 def format_passages(passages):
-    """Number the passages for the prompt:
-    [1] (source: 01-05_Attendance_And_Withdrawal.pdf, chunk 0)
-    Article Nine: a student must attend ..."""
-    blocks = []
-    for n, passage in enumerate(passages, start=1):
-        # TODO 1: add one f-string to blocks: "[n] (source: <source>, chunk <chunk>)", a new line, then the text.
-        raise NotImplementedError("TODO 1: add one f-string per passage to blocks")
-    return "\n\n".join(blocks)
+    """EMPTY: number the passages for the prompt, so the LLM can cite them as [1], [2], ...
+
+    passages: the list from search_docs() (dicts with "source", "chunk", "text", ...).
+    Returns: ONE str, the blocks joined with a blank line ("\n\n"). Each block is a header line, a new
+    line, then the passage text. Numbering starts at 1:
+        [1] (source: 01-05_Attendance_And_Withdrawal.txt, chunk 0)
+        Article Nine: a student must attend ...
+
+        [2] (source: 32_Transcripts_From_Outside_Dhahran.txt, chunk 1)
+        Each transcript costs SAR 11.50 ...
+    An empty list gives "".
+    """
+    # 1. For n, passage in enumerate(passages, start=1):
+    #      block = f"[{n}] (source: {passage['source']}, chunk {passage['chunk']})\n{passage['text']}"
+    # 2. Return "\n\n".join(blocks).
+    raise NotImplementedError("write format_passages()")
 
 
 # ---------------------------------------------------------------- Lab 2: prompt + LLM
 # The LLM only sees this text: 1 instructions, 2 context (the passages), 3 the question.
-# TODO 4 (Lab 3): add this rule to the prompt below:   - Cite the passage number, like [2].
-# TODO 7 (planned break): add this rule too:
-#   - If the passages do not contain the answer, reply exactly: {i_dont_know}
+# Given complete. Rule 2 makes citations possible; rule 3 is layer 2 of "I don't know" (see answer()).
 PROMPT = """Use the passages below to answer the question.
 
 Rules:
 - Answer only from the passages, not from memory.
+- Cite the passage number, like [2].
+- If the passages do not contain the answer, reply exactly: {i_dont_know}
 
 PASSAGES:
 {passages}
@@ -70,38 +83,52 @@ def build_prompt(question, passages):
 
 
 def answer_naive(question, k=3):
-    """Search, then answer from the passages. No checks yet."""
-    # TODO 2: passages = the k best chunks for the question (search_docs).
-    # TODO 3: return the LLM's reply to build_prompt(question, passages).
-    raise NotImplementedError("TODO 2-3: search, then ask the LLM with build_prompt()")
+    """EMPTY: search, then answer from the passages. No checks yet (no score threshold, no citations).
+
+    Returns: the LLM's reply, one str.
+    """
+    # 1. passages = search_docs(question, k)      (the k best chunks; search_docs comes from rag.py)
+    # 2. Return llm(build_prompt(question, passages)).
+    raise NotImplementedError("write answer_naive()")
 
 
 # ---------------------------------------------------------------- Lab 3: citations
 def extract_citations(answer_text, passages):
-    """Find every [n] in the answer and map it to its passage.
-    [1] -> {"n": 1, "source": "01-05_Attendance_And_Withdrawal.pdf", "chunk": 0}. A number with no passage is flagged."""
-    citations = []
-    numbers = dict.fromkeys(int(n) for n in re.findall(r"\[(\d+)\]", answer_text))  # in order, no repeats
-    for n in numbers:
-        if not 1 <= n <= len(passages):
-            print(f"Warning: the answer cites [{n}], but there are only {len(passages)} passages: "
-                  "the model made it up.")
-            continue
-        # TODO 5: add {"n": n, "source": ..., "chunk": ...} to citations, taken from passage n (passages[n - 1]).
-        raise NotImplementedError("TODO 5: map [n] back to its passage")
-    return citations
+    """EMPTY: find every [n] in the answer and map it back to its passage.
+
+    Returns: a list of dicts, in the order the numbers first appear, each number once:
+        "... 20% [1] ... [3] ... [1]"  ->  [{"n": 1, "source": "01-05_Attendance_And_Withdrawal.txt", "chunk": 0},
+                                           {"n": 3, "source": ..., "chunk": ...}]
+    "n" is an int. A number with no passage (0, or bigger than len(passages)) is NOT in the list: print
+    the warning below for it instead, because the model made it up.
+    """
+    # 1. numbers = dict.fromkeys(int(n) for n in re.findall(r"\[(\d+)\]", answer_text))   (in order, no repeats)
+    # 2. For each n: if not 1 <= n <= len(passages):
+    #        print(f"Warning: the answer cites [{n}], but there are only {len(passages)} passages: "
+    #              "the model made it up.")
+    #    and go on to the next number.
+    # 3. Otherwise passage = passages[n - 1] (lists start at 0, citations at 1); append
+    #    {"n": n, "source": passage["source"], "chunk": passage["chunk"]}.
+    # 4. Return the list.
+    raise NotImplementedError("write extract_citations()")
 
 
 # ---------------------------------------------------------------- the fix: answer() with two layers of honesty
 def answer(question, k=None):
-    """search -> filter -> LLM -> cited answer, or "I don't know"."""
-    passages = search_docs(question, k)
-    # Layer 1 (code): if no passage scores at least MIN_SCORE, don't even call the LLM.
-    # TODO 6: keep only passages with score >= config.MIN_SCORE; if none are left,
-    #         return {"answer": I_DONT_KNOW, "citations": [], "passages": []}.
-    # Layer 2 (prompt): TODO 7 tells the LLM what to say when the passages lack the answer.
-    reply = llm(build_prompt(question, passages))
-    return {"answer": reply, "citations": extract_citations(reply, passages), "passages": passages}
+    """EMPTY: search -> filter -> LLM -> cited answer, or "I don't know". Two layers of honesty:
+    layer 1 (this code) skips the LLM when no passage is close enough; layer 2 (the prompt's last rule)
+    makes the LLM say I_DONT_KNOW when the passages lack the answer.
+
+    k: how many chunks to search for (None = config.TOP_K).
+    Returns: a dict with exactly these keys (mini_test, diagnose, the smoke test and the chat use them):
+        {"answer": str, "citations": [ {"n", "source", "chunk"}, ... ], "passages": [the passages used]}
+    """
+    # 1. passages = search_docs(question, k)
+    # 2. Layer 1: keep only the passages with passage["score"] >= config.MIN_SCORE (read it here, every call).
+    #    If none are left: return {"answer": I_DONT_KNOW, "citations": [], "passages": []} WITHOUT calling the LLM.
+    # 3. reply = llm(build_prompt(question, passages))      (with the kept passages only)
+    # 4. Return {"answer": reply, "citations": extract_citations(reply, passages), "passages": passages}.
+    raise NotImplementedError("write answer()")
 
 
 # ---------------------------------------------------------------- mini-test: does our assistant pass?
@@ -115,8 +142,9 @@ def load_tests():
 
 
 def same_document(source, expected):
-    """'01-05_Attendance.md' matches '01-05_Attendance': the .pdf, .md and .txt copies count as one document."""
-    return Path(source).stem == Path(expected).stem
+    """'01-05_Attendance.md' matches '01-05_Attendance': the .pdf, .md and .txt copies count as one document.
+    expected may name several files, "a|b", when more than one document holds the answer."""
+    return any(Path(source).stem == Path(option).stem for option in expected.split("|"))
 
 
 def passed(result, expected):
