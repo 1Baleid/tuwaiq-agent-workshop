@@ -1,8 +1,8 @@
 # Laptop install (Windows / macOS / Linux):   python -m pip install -r requirements.txt
 #
-# Tested with Python 3.13 (the same as Google Colab in November 2026).
-# Every version below is pinned, and equals Colab's preinstalled version wherever Colab has
-# the package, so code behaves the same on a laptop and in Colab.
+# Runtime-tested with Python 3.13 (the same as Google Colab in November 2026).
+# Python 3.14 Windows binary-wheel resolution is verified; runtime testing is still needed.
+# pandas and scikit-learn use newer releases with Python 3.14 wheels.
 #
 # Notes
 # - In Colab, install requirements-colab.txt instead (Colab already has everything else).
@@ -38,7 +38,7 @@ networkx==3.7
 numpy==2.4.6
 openai==2.54.0
 packaging==26.3
-pandas==2.2.3
+pandas==3.1.1
 pydantic==2.14.1
 pydantic_core==2.50.1
 Pygments==2.21.0
@@ -50,7 +50,7 @@ PyYAML==6.0.3
 regex==2025.11.3
 rich==13.9.4
 safetensors==0.8.0
-scikit-learn==1.6.1
+scikit-learn==1.9.1
 scipy==1.16.3
 sentence-transformers==5.7.0
 setuptools==80.10.2
