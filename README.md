@@ -38,11 +38,11 @@ python scripts/smoke_test.py
 | File | Session | What it does |
 |---|---|---|
 | `config.py` | all | **Every setting**, including the one LLM switch `LLM_PROVIDER` |
-| `rag.py` | 1 | load documents → chunks → embeddings → FAISS index → `search()` |
-| `answer.py` | 2 | answer from the best chunks, with citations like `[course_credit.txt#3]`, or "I don't know" |
-| `tools.py` | 3 | the tool registry: `search_docs`, `calculator`, `get_deadline`, plus `validate_call()` |
-| `agent.py` | 3–4 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
-| `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S4) |
+| `rag.py` | 3 | load documents → chunks → embeddings → ChromaDB index → `search_docs()` |
+| `answer.py` | 3 | answer from the best chunks, with citations like `[01-05_Attendance_And_Withdrawal.md#3]`, or "I don't know" |
+| `tools.py` | 1–2 | the tool registry: `search_docs`, `calculator`, `get_deadline`, plus `validate_call()` |
+| `agent.py` | 1–2 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
+| `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S2) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
 | `data/` | | the KFUPM documents in three copies: `kfupm_structured/` (Markdown, default), `kfupm_raw/` (plain dump), `sample/` (original PDFs) |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
@@ -51,7 +51,7 @@ python scripts/smoke_test.py
 
 ## Build the harness (`agent.py`)
 
-`agent.py` is the Session 3–4 file you complete. By then the rest of the repo gives you
+`agent.py` is the Session 1–2 file you complete. The rest of the repo gives you
 the pieces: `rag.py` finds chunks, `answer.py` formats and checks citations, `tools.py` runs the
 tool calls, and `llm.py` talks to the model. `chat_server.py`, `eval_runner.py` and
 `scripts/smoke_test.py` all call `agent.run_agent()`, so keep its return contract (documented in
@@ -71,7 +71,7 @@ A harness that is good at RAG does five things:
 
 * **Retrieval before generation.** The prompt tells the model to call `search_docs` first, and the
   loop sends the retrieved chunks back as a tool result. The model never answers from memory.
-* **Citations you can check.** Each chunk has an id like `course_credit.txt#3`. The prompt asks
+* **Citations you can check.** Each chunk has an id like `01-05_Attendance_And_Withdrawal.md#3`. The prompt asks
   for that id after every fact; `answer.cited_sources()` keeps only ids that really exist.
 * **A real "I don't know".** `MIN_SCORE` stops weak matches before the LLM sees them, and the
   prompt stops the LLM from filling the gap with a guess.
@@ -87,7 +87,7 @@ of those questions pass without making the "I don't know" cases worse.
 layer of the workshop: it lists, reads, writes and edits files, runs the workshop checks
 (`smoke`, `eval`, `tests`), can ask the RAG system a question (`ask_rag`), refuses to write
 `data/` or `eval/questions.json`, and will not accept an answer after an unverified edit.
-`agent.py` is the RAG agent loop students build in Sessions 3–4. The solution file is
+`agent.py` is the RAG agent loop students build in Sessions 1–2. The solution file is
 excluded from the student repo.
 
 ## Settings to change on purpose ("break it, then fix it")
@@ -189,9 +189,8 @@ For Arabic documents, also change `EMBEDDING_MODEL` (see the comment in `config.
 Pinned in `requirements.txt` (laptops): most versions match Google Colab's preinstalled packages
 (November 2026, Python 3.13). pandas and scikit-learn use newer versions with Python 3.14 Windows
 wheels. Dependency resolution has been checked for Python 3.13 and 3.14; Python 3.14 runtime
-testing is still needed. `requirements-colab.txt` adds only what Colab lacks (`faiss-cpu`, `pypdf`).
-FAISS was chosen over ChromaDB: on Colab it installs one package with no conflicts, while ChromaDB pulls
-~84 packages, upgrades Colab's own packages, and needs the Visual C++ runtime on Windows.
+testing is still needed. `requirements-colab.txt` adds only what Colab lacks (`chromadb`, `pypdf`).
+Without `chromadb`, `rag.py` falls back to plain numpy search (same results).
 
 ## Docs
 

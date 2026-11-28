@@ -24,7 +24,7 @@ if str(ROOT) not in sys.path:
 
 # Expected versions from requirements.txt; pandas and scikit-learn are newer for Python 3.14 wheels.
 EXPECTED = {"openai": "2.54.0", "python-dotenv": "1.2.4", "sentence-transformers": "5.7.0", "torch": "2.11.0",
-            "numpy": "2.4.6", "pandas": "3.1.1", "scikit-learn": "1.9.1", "faiss-cpu": "1.15.1", "pypdf": "6.21.4"}
+            "numpy": "2.4.6", "pandas": "3.1.1", "scikit-learn": "1.9.1", "chromadb": "1.5.9", "pypdf": "6.21.4"}
 state = {}  # things one check makes and a later check uses (the search store)
 
 
