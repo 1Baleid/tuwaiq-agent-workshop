@@ -59,15 +59,15 @@ MAX_OUTPUT_TOKENS = 800      # longest reply we accept (models that "think" firs
 # ------------------------------------------------------------
 # 2. Documents and search  (Session 3)
 # ------------------------------------------------------------
-# The same 34 KFUPM documents come in three copies. Pick one:
+# The same 34 KFUPM documents come in three folders (see data/README.md). Pick one:
 #   data/kfupm_raw         the default, used in the slides: one plain-text dump, no headings, lists or paragraphs
 #   data/kfupm_structured  the same information as Markdown: one "## heading" section per complete rule
 #                          (best with CHUNK_BY_SECTION = True)
-#   data/sample            the original PDFs
-# Every folder has the same layout: docs/ (the .txt, .md and .pdf files), sources.csv, deadlines.csv.
+#   data/kfupm_pdf         the original PDFs
 # Or set the CORPUS_DIR environment variable, e.g. CORPUS_DIR=data/kfupm_structured, without editing this file.
 import os
 CORPUS_DIR = ROOT / os.environ.get("CORPUS_DIR", "data/kfupm_raw")
+DEADLINES_FILE = ROOT / "data" / "deadlines.csv"   # the table behind the get_deadline tool
 
 # Small (90 MB) and fast, English only. It reads at most ~256 words per chunk.
 # For Arabic documents use "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" (470 MB).

@@ -62,8 +62,8 @@ def calculator(expression):
 
 # ---------------------------------------------------------------- tool 3: deadline lookup
 def load_deadlines():
-    """Read deadlines.csv from the corpus folder: {name: row}, each row with 'date' and 'note'."""
-    with open(config.CORPUS_DIR / "deadlines.csv", encoding="utf-8") as f:
+    """Read data/deadlines.csv (config.DEADLINES_FILE): {name: row}, each row with 'date' and 'note'."""
+    with open(config.DEADLINES_FILE, encoding="utf-8") as f:
         return {row["name"]: row for row in csv.DictReader(f)}
 
 

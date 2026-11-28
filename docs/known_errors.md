@@ -98,6 +98,6 @@ providers' official docs and the T1 research.
 
 | Symptom | Cause | Fix | Time limit |
 |---|---|---|---|
-| `make_main.py --check` says `differs: data/sample/sources.csv` **(seen)** | Windows line endings (CRLF) on disk, e.g. from Python's csv writer; git stores LF | Fixed: `make_main.py` reads files from the commit. Run `git checkout -- <file>` to tidy the working copy | n/a |
+| `make_main.py --check` says `differs: data/deadlines.csv` **(seen)** | Windows line endings (CRLF) on disk, e.g. from Python's csv writer; git stores LF | Fixed: `make_main.py` reads files from the commit. Run `git checkout -- <file>` to tidy the working copy | n/a |
 | `make_main.py`: `SOLUTION START without SOLUTION END` (or the reverse) | Unbalanced markers in a `.py` file or notebook cell | Fix the markers; `python tests/test_make_main.py` checks every file | 5 min |
 | A student's `git checkout origin/solutions -- rag.py` fails with "pathspec … did not match" | Run outside the project folder, or the clone has no `origin/solutions` | In Colab, run cell 1 first (it goes into the project folder). Check with `!git branch -a` | 5 min |

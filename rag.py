@@ -51,9 +51,9 @@ def read_file(path):
 
 
 def load_documents(folder=None):
-    """Read every document in the folder (default: <corpus>/docs).
+    """Read every document in the folder (default: config.CORPUS_DIR, e.g. data/kfupm_raw).
     Each document becomes {"source": "01-05_Attendance_And_Withdrawal.pdf", "text": "Article Nine: a student must attend ..."}."""
-    folder = Path(folder or config.CORPUS_DIR / "docs")
+    folder = Path(folder or config.CORPUS_DIR)
     docs, skipped = [], []
     for path in sorted(glob.glob(str(folder / "*"))):
         text = read_file(path)

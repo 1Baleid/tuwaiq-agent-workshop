@@ -74,7 +74,7 @@ def check_corpus_and_chunks():
     import rag
     documents = rag.load_documents()
     if not documents:
-        raise RuntimeError(f"no .txt/.md/.pdf files in {config.CORPUS_DIR / 'docs'}")
+        raise RuntimeError(f"no .txt/.md/.pdf files in {config.CORPUS_DIR}")
     chunks = rag.make_chunks(documents)  # TODO on main until Session 3
     return f"{len(documents)} documents -> {len(chunks)} chunks"
 

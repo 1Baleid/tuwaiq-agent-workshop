@@ -44,7 +44,7 @@ python scripts/smoke_test.py
 | `agent.py` | 1–2 | **you complete it:** the harness loop (7 short TODOs): prompt rules, JSON check, log, timeout, tool call |
 | `llm.py` | all | `chat()` for every provider (one OpenAI-compatible client) and `chat_with_retries()` (S2) |
 | `eval_runner.py` | 5 | runs `eval/questions.json` and shows a results table with failures flagged |
-| `data/` | | the KFUPM documents in three copies: `kfupm_raw/` (plain dump, default, used in the slides), `kfupm_structured/` (Markdown, one section per rule), `sample/` (original PDFs) |
+| `data/` | | the 34 KFUPM documents in three folders: `kfupm_raw/` (plain text, default, used in the slides), `kfupm_structured/` (Markdown), `kfupm_pdf/` (originals), plus `deadlines.csv`. See `data/README.md` |
 | `notebooks/` | | `00_setup.ipynb` (pre-work) and `s5_evaluate.ipynb` (Session 5) |
 | `scripts/` | | instructor tools (table below) |
 | `docs/` | | decisions, pre-work, known errors, handovers |
@@ -165,8 +165,8 @@ model, and students see the parsing and validation happen. The test is in `docs/
 
 ## Swapping the corpus
 
-Copy the layout of `data/sample/` (`docs/`, `sources.csv`, `deadlines.csv`) into a new folder, set
-`CORPUS_DIR` in `config.py`, replace `eval/questions.json`, and run `python scripts/smoke_test.py`.
+Put the new documents (`.txt`, `.md` or `.pdf`) in a new folder such as `data/campus/`, set `CORPUS_DIR`
+in `config.py`, update `data/deadlines.csv` and `eval/questions.json`, and run `python scripts/smoke_test.py`.
 For Arabic documents, also change `EMBEDDING_MODEL` (see the comment in `config.py`).
 
 ## Instructor tools
@@ -196,4 +196,4 @@ Without `chromadb`, `rag.py` falls back to plain numpy search (same results).
 
 `docs/llm_options.md` (T1) · `docs/llm_decision.md` (T2) · `docs/prework.md` · `docs/known_errors.md` · `docs/handover/`
 
-Documents: public pages of King Fahd University of Petroleum & Minerals (KFUPM): original PDFs in `data/sample/`, a structured Markdown copy in `data/kfupm_structured/` and a plain-text copy in `data/kfupm_raw/`; source URL per file in each `sources.csv`.
+Documents: public pages of King Fahd University of Petroleum & Minerals (KFUPM); the source of every file is listed in `data/README.md`.
